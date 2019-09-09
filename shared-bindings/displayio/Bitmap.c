@@ -178,9 +178,28 @@ STATIC mp_obj_t bitmap_subscr(mp_obj_t self_in, mp_obj_t index_obj, mp_obj_t val
     return mp_const_none;
 }
 
+STATIC mp_obj_t displayio_bitmap_obj_do_stuff(mp_obj_t self_in) {
+    displayio_bitmap_t *self = MP_OBJ_TO_PTR(self_in);
+    uint16_t width = common_hal_displayio_bitmap_get_width(self);
+    uint16_t height = common_hal_displayio_bitmap_get_height(self);
+    static unsigned short lfsr = 0xACE1u;
+    unsigned bit;
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            bit  = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5) ) & 1;
+            lfsr =  (lfsr >> 1) | (bit << 15);
+            common_hal_displayio_bitmap_set_pixel(self, x, y, lfsr % 5);
+        }
+    }
+    return 0;
+}
+
+MP_DEFINE_CONST_FUN_OBJ_1(displayio_bitmap_do_stuff_obj, displayio_bitmap_obj_do_stuff);
+
 STATIC const mp_rom_map_elem_t displayio_bitmap_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_height), MP_ROM_PTR(&displayio_bitmap_height_obj) },
     { MP_ROM_QSTR(MP_QSTR_width), MP_ROM_PTR(&displayio_bitmap_width_obj) },
+    { MP_ROM_QSTR(MP_QSTR_do_stuff), MP_ROM_PTR(&displayio_bitmap_do_stuff_obj) },
 };
 STATIC MP_DEFINE_CONST_DICT(displayio_bitmap_locals_dict, displayio_bitmap_locals_dict_table);
 
