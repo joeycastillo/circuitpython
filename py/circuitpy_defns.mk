@@ -220,6 +220,9 @@ endif
 ifeq ($(CIRCUITPY_USTACK),1)
 SRC_PATTERNS += ustack/%
 endif
+ifeq ($(CIRCUITPY_BABELIO),1)
+SRC_PATTERNS += babelio/%
+endif
 ifeq ($(CIRCUITPY_PEW),1)
 SRC_PATTERNS += _pew/%
 endif
@@ -354,6 +357,8 @@ SRC_SHARED_MODULE_ALL = \
 	terminalio/__init__.c \
 	uheap/__init__.c \
 	ustack/__init__.c \
+	babelio/__init__.c \
+	babelio/Babel.c \
 	_pew/__init__.c \
 	_pew/PewPew.c
 

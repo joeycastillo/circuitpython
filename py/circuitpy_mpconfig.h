@@ -417,6 +417,13 @@ extern const struct _mp_obj_module_t pew_module;
 #define PEW_MODULE
 #endif
 
+#if CIRCUITPY_BABELIO
+extern const struct _mp_obj_module_t babelio_module;
+#define BABELIO_MODULE          { MP_OBJ_NEW_QSTR(MP_QSTR_babelio),(mp_obj_t)&babelio_module },
+#else
+#define BABELIO_MODULE
+#endif
+
 #if CIRCUITPY_PIXELBUF
 extern const struct _mp_obj_module_t pixelbuf_module;
 #define PIXELBUF_MODULE        { MP_OBJ_NEW_QSTR(MP_QSTR__pixelbuf),(mp_obj_t)&pixelbuf_module },
@@ -603,6 +610,7 @@ extern const struct _mp_obj_module_t ustack_module;
       SOCKET_MODULE \
       WIZNET_MODULE \
     PEW_MODULE \
+    BABELIO_MODULE \
     PIXELBUF_MODULE \
     PS2IO_MODULE \
     PULSEIO_MODULE \
