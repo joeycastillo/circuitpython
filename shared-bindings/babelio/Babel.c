@@ -19,10 +19,17 @@
 //|   Create an object.
  
 STATIC mp_obj_t babelio_babel_make_new(const mp_obj_type_t *type, size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
-    mp_arg_check_num(n_args, kw_args, 0, 0, true);
+    enum { ARG_spi, ARG_cs, ARG_bitmap };
+    static const mp_arg_t allowed_args[] = {
+        { MP_QSTR_spi, MP_ARG_REQUIRED | MP_ARG_OBJ },
+        { MP_QSTR_cs, MP_ARG_REQUIRED | MP_ARG_OBJ },
+        { MP_QSTR_bitmap, MP_ARG_OBJ, { .u_obj = mp_const_none } },
+    };
+    mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
+    mp_arg_parse_all(n_args, pos_args, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
     babelio_babel_obj_t *self = m_new_obj(babelio_babel_obj_t);
     self->base.type = &babelio_babel_type;
-    shared_module_babelio_babel_construct(self);
+    shared_module_babelio_babel_construct(self, args[ARG_spi].u_obj, args[ARG_cs].u_obj, args[ARG_bitmap].u_obj);
     return MP_OBJ_FROM_PTR(self);
 }
  

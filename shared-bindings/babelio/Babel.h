@@ -5,7 +5,7 @@
  
 extern const mp_obj_type_t babelio_babel_type;
  
-extern void shared_module_babelio_babel_construct(babelio_babel_obj_t* self);
+extern void shared_module_babelio_babel_construct(babelio_babel_obj_t* self, mp_obj_t spi_in, mp_obj_t cs_in, mp_obj_t bitmap_in);
 extern void shared_module_babelio_babel_deinit(babelio_babel_obj_t* self);
 extern bool shared_module_babelio_babel_deinited(babelio_babel_obj_t* self);
 extern mp_int_t shared_module_babelio_babel_get_max_codepoint(babelio_babel_obj_t* self);
