@@ -22,6 +22,18 @@
 
 const external_flash_device _babel_device_descriptor = GD25Q16C;
 
+// function signatures
+bool shared_module_babelio_babel_wait_for_flash_ready(babelio_babel_obj_t* self);
+bool shared_module_babelio_babel_transfer(babelio_babel_obj_t* self, uint8_t* command, uint32_t command_length, void* data_in, void* data_out, uint32_t data_length);
+bool shared_module_babelio_babel_transfer_command(babelio_babel_obj_t* self, uint8_t command, void* data_in, void* data_out, uint32_t data_length);
+bool shared_module_babelio_babel_spi_flash_command(babelio_babel_obj_t* self, uint8_t command);
+bool shared_module_babelio_babel_spi_flash_read_command(babelio_babel_obj_t* self, uint8_t command, void* data, uint32_t data_length);
+bool shared_module_babelio_babel_spi_flash_write_command(babelio_babel_obj_t* self, uint8_t command, void* data, uint32_t data_length);
+bool shared_module_babelio_babel_spi_flash_read_data(babelio_babel_obj_t* self, uint32_t address, void* data, uint32_t data_length);
+uint32_t shared_module_babelio_babel_fetch_glyph_basic_info(babelio_babel_obj_t* self, unichar codepoint);
+uint16_t shared_module_babelio_babel_fetch_glyph_extended_info(babelio_babel_obj_t* self, unichar codepoint);
+
+
 static void shared_module_babelio_address_to_bytes(uint32_t address, uint8_t* bytes) {
     bytes[0] = (address >> 16) & 0xff;
     bytes[1] = (address >> 8) & 0xff;
@@ -106,6 +118,16 @@ void shared_module_babelio_babel_construct(babelio_babel_obj_t* self, mp_obj_t s
     common_hal_digitalio_digitalinout_switch_to_output(&self->cs, 1, DRIVE_MODE_PUSH_PULL);
     common_hal_digitalio_digitalinout_never_reset(&self->cs);
     common_hal_mcu_delay_us(_babel_device_descriptor.start_up_time_us);
+
+    // The response will be 0xff if the flash needs more time to start up.
+    uint8_t jedec_id_response[3] = {0xff, 0xff, 0xff};
+    while (jedec_id_response[0] == 0xff) {
+        shared_module_babelio_babel_spi_flash_read_command(self, CMD_READ_JEDEC_ID, jedec_id_response, 3);
+    }    
+    if (jedec_id_response[0] != _babel_device_descriptor.manufacturer_id) mp_raise_ValueError(translate("Invalid Flash manufacturer ID"));
+    if (jedec_id_response[1] != _babel_device_descriptor.memory_type) mp_raise_ValueError(translate("Invalid Flash memory type"));
+    if (jedec_id_response[2] != _babel_device_descriptor.capacity) mp_raise_ValueError(translate("Invalid Flash capacity"));
+
     uint8_t read_status_response[1] = {0x00};
     // The write in progress bit should be low.
     do {
@@ -134,23 +156,43 @@ void shared_module_babelio_babel_construct(babelio_babel_obj_t* self, mp_obj_t s
     // if they gave us a bitmap for drawing pixels to, stash that too
     if (bitmap_in) self->bitmap = MP_OBJ_TO_PTR(bitmap_in);
 
-    // TODO: read data from flash chip and initialize properties
-    self->nominal_width = 0;
-    self->nominal_height = 0;
+    // read data from flash chip and initialize properties
+    shared_module_babelio_babel_spi_flash_read_data(self, BABEL_HEADER_LOC_WIDTH, &self->nominal_width, sizeof(self->nominal_width));
+    shared_module_babelio_babel_spi_flash_read_data(self, BABEL_HEADER_LOC_HEIGHT, &self->nominal_height, sizeof(self->nominal_height));
     shared_module_babelio_babel_spi_flash_read_data(self, BABEL_HEADER_LOC_MAXGLYPH, &self->last_codepoint, sizeof(self->last_codepoint));
-    self->location_of_lut = 0;
-    self->location_of_glyphs = 0;
-    self->location_of_extras = 0;
-    self->start_of_uppercase_mapping = 0;
-    self->start_of_lowercase_mapping = 0;
-    self->start_of_titlecase_mapping = 0;
-    self->start_of_mirrored_mapping = 0;
-    self->end_of_uppercase_mapping = 0;
-    self->end_of_lowercase_mapping = 0;
-    self->end_of_titlecase_mapping = 0;
-    self->end_of_mirrored_mapping = 0;
-    self->info_for_replacement_character = 0;
-    self->extended_info_for_replacement_character = 0;
+    shared_module_babelio_babel_spi_flash_read_data(self, BABEL_HEADER_LOC_START_OF_LUT, &self->location_of_lut, sizeof(self->location_of_lut));
+    shared_module_babelio_babel_spi_flash_read_data(self, BABEL_HEADER_LOC_START_OF_GLYPHS, &self->location_of_glyphs, sizeof(self->location_of_glyphs));
+    shared_module_babelio_babel_spi_flash_read_data(self, BABEL_HEADER_LOC_START_OF_EXTRAS, &self->location_of_extras, sizeof(self->location_of_extras));
+    uint32_t extra_loc = 0;
+    uint32_t extra_len = 0;
+    uint32_t currentPos = self->location_of_extras;
+    do {
+        shared_module_babelio_babel_spi_flash_read_data(self, currentPos, &extra_loc, sizeof(extra_loc));
+        currentPos += sizeof(extra_loc);
+        shared_module_babelio_babel_spi_flash_read_data(self, currentPos, &extra_len, sizeof(extra_loc));
+        currentPos += sizeof(extra_len);
+        switch (extra_loc & 0xFF) {
+        case BABEL_HEADER_EXTRA_TYPE_UPPERCASE_MAPPINGS:
+            self->start_of_uppercase_mapping = extra_loc >> 8;
+            self->end_of_uppercase_mapping = (extra_loc >> 8) + (extra_len >> 8);
+            break;
+        case BABEL_HEADER_EXTRA_TYPE_LOWERCASE_MAPPINGS:
+            self->start_of_lowercase_mapping = extra_loc >> 8;
+            self->end_of_lowercase_mapping = (extra_loc >> 8) + (extra_len >> 8);
+            break;
+        case BABEL_HEADER_EXTRA_TYPE_TITLECASE_MAPPINGS:
+            self->start_of_titlecase_mapping = extra_loc >> 8;
+            self->end_of_titlecase_mapping = (extra_loc >> 8) + (extra_len >> 8);
+            break;
+        case BABEL_HEADER_EXTRA_TYPE_MIRRORING_MAPPINGS:
+            self->start_of_mirrored_mapping = extra_loc >> 8;
+            self->end_of_mirrored_mapping = (extra_loc >> 8) + (extra_len >> 8);
+            break;
+        }
+    } while(extra_loc && (currentPos < 256));
+
+    self->info_for_replacement_character = shared_module_babelio_babel_fetch_glyph_basic_info(self, 0xFFFD);
+    self->extended_info_for_replacement_character = shared_module_babelio_babel_fetch_glyph_extended_info(self, 0xFFFD);
 
     // set up typesetter state
     self->cursor.x = 0;
@@ -181,3 +223,121 @@ mp_int_t shared_module_babelio_babel_get_max_codepoint(babelio_babel_obj_t* self
     return self->last_codepoint;
 }
 
+uint32_t shared_module_babelio_babel_fetch_glyph_basic_info(babelio_babel_obj_t* self, unichar codepoint) {
+    uint32_t retVal;
+    uint32_t loc = self->location_of_lut + codepoint * 6;
+
+    shared_module_babelio_babel_spi_flash_read_data(self, loc, &retVal, 4);
+
+    return retVal;
+}
+
+uint16_t shared_module_babelio_babel_fetch_glyph_extended_info(babelio_babel_obj_t* self, unichar codepoint) {
+    uint16_t retVal;
+    uint32_t loc = 4 + self->location_of_lut + codepoint * 6;
+
+    shared_module_babelio_babel_spi_flash_read_data(self, loc, &retVal, 2);
+
+    return retVal;
+}
+
+bool shared_module_babelio_babel_fetch_glyph_data(babelio_babel_obj_t* self, unichar codepoint, _babelio_glyph_t *glyph) {
+    bool retVal = true;
+    uint32_t loc = self->location_of_lut + codepoint * 6;
+
+    // don't bother looking up out-of-range codepoints
+    if (codepoint > self->last_codepoint) glyph->info = 0;
+    else shared_module_babelio_babel_spi_flash_read_data(self, loc, glyph, 6);
+
+    if (!glyph->info) {
+        glyph->info = self->info_for_replacement_character;
+        glyph->extendedInfo = self->extended_info_for_replacement_character;
+        retVal = false;
+    }
+    
+    loc = BABEL_INFO_GET_GLYPH_LOCATION(glyph->info);
+
+    if (BABEL_INFO_GET_GLYPH_WIDTH(glyph->info) == 16) {
+        shared_module_babelio_babel_spi_flash_read_data(self, loc, &glyph->glyphData, 32);
+        return retVal;
+    } else {
+        shared_module_babelio_babel_spi_flash_read_data(self, loc, &glyph->glyphData, 16);
+        return retVal;
+    }
+}
+
+int16_t shared_module_babelio_babel_search_mapping(babelio_babel_obj_t* self, uint32_t start_of_mapping, uint32_t first, uint32_t last, unichar key) {
+    uint32_t retVal;
+    if (first > last) {
+        retVal = -1;
+    } else {
+        uint32_t mid = (first + last)/2;
+        BABEL_MAPPING mapping;
+        shared_module_babelio_babel_spi_flash_read_data(self, start_of_mapping + mid * sizeof(BABEL_MAPPING), &mapping, sizeof(BABEL_MAPPING));
+        unichar current_key = BABEL_MAPPING_GET_KEY(mapping);
+        if (current_key == key) {
+            retVal = mid;
+        } else {
+            if (key < current_key) {
+                retVal = shared_module_babelio_babel_search_mapping(self, start_of_mapping, first, mid - 1, key);
+            } else {
+                retVal = shared_module_babelio_babel_search_mapping(self, start_of_mapping, mid + 1, last, key);
+            }
+        }
+    }
+
+    return retVal;
+}
+
+unichar shared_module_babelio_babel_uppercase_mapping_for_codepoint(babelio_babel_obj_t* self, unichar codepoint) {
+    uint32_t lastIndex = (self->end_of_uppercase_mapping - self->start_of_uppercase_mapping) / sizeof(BABEL_MAPPING);
+    int16_t index_of_result = shared_module_babelio_babel_search_mapping(self, self->start_of_uppercase_mapping, 0, lastIndex, codepoint);
+
+    if (index_of_result == -1) return codepoint;
+    BABEL_MAPPING mapping;
+    shared_module_babelio_babel_spi_flash_read_data(self, self->start_of_uppercase_mapping + index_of_result * sizeof(BABEL_MAPPING), &mapping, sizeof(BABEL_MAPPING));
+
+    return BABEL_MAPPING_GET_VALUE(mapping);
+}
+
+unichar shared_module_babelio_babel_lowercase_mapping_for_codepoint(babelio_babel_obj_t* self, unichar codepoint) {
+    uint32_t lastIndex = (self->end_of_lowercase_mapping - self->start_of_lowercase_mapping) / sizeof(BABEL_MAPPING);
+    int16_t index_of_result = shared_module_babelio_babel_search_mapping(self, self->start_of_lowercase_mapping, 0, lastIndex, codepoint);
+
+    if (index_of_result == -1) return codepoint;
+    BABEL_MAPPING mapping;
+    shared_module_babelio_babel_spi_flash_read_data(self, self->start_of_lowercase_mapping + index_of_result * sizeof(BABEL_MAPPING), &mapping, sizeof(BABEL_MAPPING));
+
+    return BABEL_MAPPING_GET_VALUE(mapping);
+}
+
+unichar shared_module_babelio_babel_titlecase_mapping_for_codepoint(babelio_babel_obj_t* self, unichar codepoint) {
+    uint32_t lastIndex = (self->end_of_titlecase_mapping - self->start_of_titlecase_mapping) / sizeof(BABEL_MAPPING);
+    int16_t index_of_result = shared_module_babelio_babel_search_mapping(self, self->start_of_titlecase_mapping, 0, lastIndex, codepoint);
+
+    if (index_of_result == -1) return codepoint;
+    BABEL_MAPPING mapping;
+    shared_module_babelio_babel_spi_flash_read_data(self, self->start_of_titlecase_mapping + index_of_result * sizeof(BABEL_MAPPING), &mapping, sizeof(BABEL_MAPPING));
+
+    return BABEL_MAPPING_GET_VALUE(mapping);
+}
+
+void shared_module_babelio_babel_to_uppercase(babelio_babel_obj_t* self, unichar *buf, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        uint16_t extendedInfo = shared_module_babelio_babel_fetch_glyph_extended_info(self, buf[i]);
+        if (BABEL_EXTENDED_GET_HAS_UPPERCASE_MAPPING(extendedInfo)) {
+            unichar uppercaseCodepoint = shared_module_babelio_babel_uppercase_mapping_for_codepoint(self, buf[i]);
+            buf[i] = uppercaseCodepoint;
+        }
+    }
+}
+
+void shared_module_babelio_babel_to_lowercase(babelio_babel_obj_t* self, unichar *buf, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        uint16_t extendedInfo = shared_module_babelio_babel_fetch_glyph_extended_info(self, buf[i]);
+        if (BABEL_EXTENDED_GET_HAS_LOWERCASE_MAPPING(extendedInfo)) {
+            unichar lowercaseCodepoint = shared_module_babelio_babel_lowercase_mapping_for_codepoint(self, buf[i]);
+            buf[i] = lowercaseCodepoint;
+        }
+    }
+}

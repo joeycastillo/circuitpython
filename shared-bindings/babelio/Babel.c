@@ -66,9 +66,6 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(babelio_babel___exit___obj, 4, 4, bab
 
 
 
-
-
-
 //|   .. attribute:: max_codepoint
 //|
 //|     The maximum codepoint contained on the SPI Flash chip.
@@ -78,22 +75,23 @@ STATIC mp_obj_t babelio_babel_obj_get_max_codepoint(mp_obj_t self_in) {
 }
 MP_DEFINE_CONST_FUN_OBJ_1(babelio_babel_get_max_codepoint_obj, babelio_babel_obj_get_max_codepoint);
 
-
-
-
-
-
-
-
-
-
-
 const mp_obj_property_t babelio_babel_max_codepoint_obj = {
     .base.type = &mp_type_property,
     .proxy = {(mp_obj_t)&babelio_babel_get_max_codepoint_obj,
               (mp_obj_t)&mp_const_none_obj},
 };
- 
+
+
+
+
+
+
+
+
+
+
+
+
 STATIC const mp_rom_map_elem_t babelio_babel_locals_dict_table[] = {
     // Methods
     { MP_ROM_QSTR(MP_QSTR_deinit), MP_ROM_PTR(&babelio_babel_deinit_obj) },

@@ -6,6 +6,7 @@
 #include "common-hal/digitalio/DigitalInOut.h"
 #include "shared-module/displayio/Bitmap.h"
 #include "supervisor/shared/external_flash/devices.h"
+#include "shared-module/babelio/BabelMacros.h"
 
 typedef struct {
     int16_t x;
@@ -18,6 +19,12 @@ typedef struct {
     int16_t max_x;
     int16_t max_y;
 } _babelio_area_t;
+
+typedef struct {
+    uint32_t info;
+    uint16_t extendedInfo;
+    uint8_t glyphData[32];
+} _babelio_glyph_t;
 
 typedef struct {
     mp_obj_base_t base;
@@ -59,15 +66,6 @@ typedef struct {
     _babelio_point_t last_glyph_location;
     bool has_last_glyph;
 } babelio_babel_obj_t;
- 
-
-bool shared_module_babelio_babel_wait_for_flash_ready(babelio_babel_obj_t* self);
-bool shared_module_babelio_babel_transfer(babelio_babel_obj_t* self, uint8_t* command, uint32_t command_length, void* data_in, void* data_out, uint32_t data_length);
-bool shared_module_babelio_babel_transfer_command(babelio_babel_obj_t* self, uint8_t command, void* data_in, void* data_out, uint32_t data_length);
-bool shared_module_babelio_babel_spi_flash_command(babelio_babel_obj_t* self, uint8_t command);
-bool shared_module_babelio_babel_spi_flash_read_command(babelio_babel_obj_t* self, uint8_t command, void* data, uint32_t data_length);
-bool shared_module_babelio_babel_spi_flash_write_command(babelio_babel_obj_t* self, uint8_t command, void* data, uint32_t data_length);
-bool shared_module_babelio_babel_spi_flash_read_data(babelio_babel_obj_t* self, uint32_t address, void* data, uint32_t data_length);
 
 #endif // MICROPY_INCLUDED_SHARED_MODULE_BABELIO_BABEL_H
 
