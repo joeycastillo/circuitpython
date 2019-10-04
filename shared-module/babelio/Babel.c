@@ -268,7 +268,7 @@ bool shared_module_babelio_babel_fetch_glyph_data(babelio_babel_obj_t* self, uni
 
 int16_t shared_module_babelio_babel_search_mapping(babelio_babel_obj_t* self, uint32_t start_of_mapping, uint32_t first, uint32_t last, unichar key) {
     uint32_t retVal;
-    if (first > last) {
+    if (start_of_mapping == 0 || first > last) {
         retVal = -1;
     } else {
         uint32_t mid = (first + last)/2;

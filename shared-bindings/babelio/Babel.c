@@ -2,6 +2,7 @@
 #include <string.h>
 #include "lib/utils/context_manager_helpers.h"
 #include "py/objproperty.h"
+#include "py/objstr.h"
 #include "py/runtime.h"
 #include "py/runtime0.h"
 #include "shared-bindings/babelio/Babel.h"
@@ -85,6 +86,31 @@ const mp_obj_property_t babelio_babel_max_codepoint_obj = {
 
 
 
+STATIC mp_obj_t babelio_babel_obj_str_caseconv(unichar (*op)(babelio_babel_obj_t*, unichar), mp_obj_t self_in, mp_obj_t str_in) {
+    GET_STR_DATA_LEN(str_in, self_data, self_len);
+    vstr_t vstr;
+    vstr_init_len(&vstr, self_len);
+    byte *data = (byte*)vstr.buf;
+    for (size_t i = 0; i < self_len; i++) {
+        *data++ = op(self_in, *self_data++);
+    }
+    return mp_obj_new_str_from_vstr(mp_obj_get_type(str_in), &vstr);
+}
+
+STATIC mp_obj_t babelio_babel_obj_str_lower(mp_obj_t self_in, mp_obj_t str_in) {
+    return babelio_babel_obj_str_caseconv(shared_module_babelio_babel_lowercase_mapping_for_codepoint, self_in, str_in);
+}
+MP_DEFINE_CONST_FUN_OBJ_2(babelio_babel_obj_str_lower_obj, babelio_babel_obj_str_lower);
+
+STATIC mp_obj_t babelio_babel_obj_str_upper(mp_obj_t self_in, mp_obj_t str_in) {
+    return babelio_babel_obj_str_caseconv(shared_module_babelio_babel_uppercase_mapping_for_codepoint, self_in, str_in);
+}
+MP_DEFINE_CONST_FUN_OBJ_2(babelio_babel_obj_str_upper_obj, babelio_babel_obj_str_upper);
+
+
+
+
+
 
 
 
@@ -98,6 +124,8 @@ STATIC const mp_rom_map_elem_t babelio_babel_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR___enter__), MP_ROM_PTR(&default___enter___obj) },
     { MP_ROM_QSTR(MP_QSTR___exit__), MP_ROM_PTR(&babelio_babel___exit___obj) },
     { MP_ROM_QSTR(MP_QSTR_max_codepoint), MP_ROM_PTR(&babelio_babel_max_codepoint_obj) },
+    { MP_ROM_QSTR(MP_QSTR_lowercase), MP_ROM_PTR(&babelio_babel_obj_str_lower_obj) },
+    { MP_ROM_QSTR(MP_QSTR_uppercase), MP_ROM_PTR(&babelio_babel_obj_str_upper_obj) },
 };
 STATIC MP_DEFINE_CONST_DICT(babelio_babel_locals_dict, babelio_babel_locals_dict_table);
  
