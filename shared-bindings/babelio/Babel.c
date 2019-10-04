@@ -115,6 +115,32 @@ MP_DEFINE_CONST_FUN_OBJ_2(babelio_babel_obj_str_upper_obj, babelio_babel_obj_str
 
 
 
+STATIC mp_obj_t babelio_babel_obj_draw_fillrect(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
+    mp_check_self(MP_OBJ_IS_TYPE(pos_args[0], &babelio_babel_obj_t));
+    babelio_babel_obj_t *self = MP_OBJ_TO_PTR(pos_args[0]);
+    enum { ARG_x, ARG_y, ARG_w, ARG_h, ARG_color };
+    static const mp_arg_t allowed_args[] = {
+        { MP_QSTR_x, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = -1} },
+        { MP_QSTR_y, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = -1} },
+        { MP_QSTR_w, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = -1} },
+        { MP_QSTR_h, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = -1} },
+        { MP_QSTR_color, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = -1} },
+    };
+    mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
+    mp_arg_parse_all(n_args - 1, pos_args + 1, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
+
+    shared_module_babelio_babel_draw_fillrect(self, args[ARG_x].u_int, args[ARG_y].u_int, args[ARG_w].u_int, args[ARG_h].u_int, args[ARG_color].u_int);
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_KW(babelio_babel_obj_draw_fillrect_obj, 6, babelio_babel_obj_draw_fillrect);
+
+
+
+
+
+
+
+
 
 
 
@@ -126,6 +152,7 @@ STATIC const mp_rom_map_elem_t babelio_babel_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_max_codepoint), MP_ROM_PTR(&babelio_babel_max_codepoint_obj) },
     { MP_ROM_QSTR(MP_QSTR_lowercase), MP_ROM_PTR(&babelio_babel_obj_str_lower_obj) },
     { MP_ROM_QSTR(MP_QSTR_uppercase), MP_ROM_PTR(&babelio_babel_obj_str_upper_obj) },
+    { MP_ROM_QSTR(MP_QSTR_drawfill), MP_ROM_PTR(&babelio_babel_obj_draw_fillrect_obj) },
 };
 STATIC MP_DEFINE_CONST_DICT(babelio_babel_locals_dict, babelio_babel_locals_dict_table);
  

@@ -2,6 +2,7 @@
 #include "shared-bindings/busio/SPI.h"
 #include "shared-bindings/digitalio/DigitalInOut.h"
 #include "shared-bindings/microcontroller/__init__.h"
+#include "shared-bindings/displayio/Bitmap.h"
 #include "supervisor/shared/external_flash/common_commands.h"
 #include "shared-module/babelio/Babel.h"
 
@@ -338,6 +339,14 @@ void shared_module_babelio_babel_to_lowercase(babelio_babel_obj_t* self, unichar
         if (BABEL_EXTENDED_GET_HAS_LOWERCASE_MAPPING(extendedInfo)) {
             unichar lowercaseCodepoint = shared_module_babelio_babel_lowercase_mapping_for_codepoint(self, buf[i]);
             buf[i] = lowercaseCodepoint;
+        }
+    }
+}
+
+void shared_module_babelio_babel_draw_fillrect(babelio_babel_obj_t* self, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
+    for (int16_t i=x; i<x+w; i++) {
+        for (int16_t j=y; j<y+h; j++) {
+            common_hal_displayio_bitmap_set_pixel(self->bitmap, i, j, color);
         }
     }
 }

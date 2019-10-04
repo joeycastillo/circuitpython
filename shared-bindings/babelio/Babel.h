@@ -17,5 +17,6 @@ extern unichar shared_module_babelio_babel_lowercase_mapping_for_codepoint(babel
 extern unichar shared_module_babelio_babel_titlecase_mapping_for_codepoint(babelio_babel_obj_t* self, unichar codepoint);
 extern void shared_module_babelio_babel_to_uppercase(babelio_babel_obj_t* self, unichar *buf, size_t len);
 extern void shared_module_babelio_babel_to_lowercase(babelio_babel_obj_t* self, unichar *buf, size_t len);
+extern void shared_module_babelio_babel_draw_fillrect(babelio_babel_obj_t* self, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 
 #endif // MICROPY_INCLUDED_SHARED_BINDINGS_BABELIO_BABEL_H
