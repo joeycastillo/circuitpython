@@ -42,14 +42,15 @@ static void shared_module_babelio_address_to_bytes(uint32_t address, uint8_t* by
 }
 
 void shared_module_babelio_babel_flash_enable(babelio_babel_obj_t* self) {
-    while (!common_hal_busio_spi_try_lock(self->spi)) {}
+//     return true;
+//     while (!common_hal_busio_spi_try_lock(self->spi)) {}
     common_hal_digitalio_digitalinout_set_value(&self->cs, false);
 }
 
 // Disable the flash over SPI.
 void shared_module_babelio_babel_flash_disable(babelio_babel_obj_t* self) {
     common_hal_digitalio_digitalinout_set_value(&self->cs, true);
-    common_hal_busio_spi_unlock(self->spi);
+//     common_hal_busio_spi_unlock(self->spi);
 }
 
 bool shared_module_babelio_babel_wait_for_flash_ready(babelio_babel_obj_t* self) {
@@ -124,6 +125,7 @@ void shared_module_babelio_babel_construct(babelio_babel_obj_t* self, mp_obj_t s
     uint8_t jedec_id_response[3] = {0xff, 0xff, 0xff};
     while (jedec_id_response[0] == 0xff) {
         shared_module_babelio_babel_spi_flash_read_command(self, CMD_READ_JEDEC_ID, jedec_id_response, 3);
+        return;
     }    
     if (jedec_id_response[0] != _babel_device_descriptor.manufacturer_id) mp_raise_ValueError(translate("Invalid Flash manufacturer ID"));
     if (jedec_id_response[1] != _babel_device_descriptor.memory_type) mp_raise_ValueError(translate("Invalid Flash memory type"));
