@@ -74,7 +74,6 @@ uint8_t stop_sequence[] = {
 
 void board_init(void) {
 // TODO: figure out display stuff
-/*
     busio_spi_obj_t* spi = &displays[0].fourwire_bus.inline_bus;
     common_hal_busio_spi_construct(spi, &pin_PB13, &pin_PB15, NULL);
     common_hal_busio_spi_never_reset(spi);
@@ -86,7 +85,7 @@ void board_init(void) {
         &pin_PB05, // EPD_DC Command or data
         &pin_PB07, // EPD_CS Chip select
         &pin_PA00, // EPD_RST Reset
-        60000000);
+        1000000);
 
     displayio_epaperdisplay_obj_t* display = &displays[0].epaper_display;
     display->base.type = &displayio_epaperdisplay_type;
@@ -109,16 +108,15 @@ void board_init(void) {
         NO_COMMAND, // set_current_row_command
         0x10, // write_black_ram_command
         false, // black_bits_inverted
-        0x13, // write_color_ram_command (can use this for grayscale eventually)
+        NO_COMMAND, // write_color_ram_command (can add this for grayscale eventually)
         false, // color_bits_inverted
         0x000000, // highlight_color
         0x12, // refresh_display_command
         40, // refresh_time
         &pin_PA01, // busy_pin
         false, // busy_state
-        1, // seconds_per_frame
+        10, // seconds_per_frame
         false); // chip_select (don't always toggle chip select)
-*/
 }
 
 bool board_requests_safe_mode(void) {
