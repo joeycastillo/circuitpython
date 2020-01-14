@@ -29,6 +29,7 @@
 #include "hal/include/hal_gpio.h"
 #include "shared-bindings/busio/SPI.h"
 #include "shared-bindings/displayio/FourWire.h"
+#include "shared-bindings/time/__init__.h"
 #include "shared-module/displayio/__init__.h"
 #include "shared-module/displayio/mipi_constants.h"
 #include "tick.h"
@@ -40,36 +41,16 @@ displayio_fourwire_obj_t board_display_obj;
 #define WIDTH 300
 
 uint8_t start_sequence[] = {
-    0x01, 5, // IL0398_POWER_SETTING
-        0x01, // Panel will generate VDH and VDL (1<<0) and VGH and VGL (1<<1)
-        0x00, // VCOMH=VDH+VCOMDC and VCOML=VDL+VCOMDC; VGH and VGL are 16v and -16v respectively
-        0x2b, // VDH =  11V
-        0x2b, // VDH = -11V
-        0x03, // VDHR=   3V (doesn't matter, setting up in B&W mode, but this is the default)
-    0x06, 3, // IL0398_BOOSTER_SOFT_START
-        0x17, // phase A: soft start 10ms, driving strength 3, off time 6.58us
-        0x17, // phase B: soft start 10ms, driving strength 3, off time 6.58us
-        0x17, // phase C: driving strength 3, off time 6.58us
-    0x00, 1, // IL0398_PANEL_SETTING
-        0x1F, // (1<<4) sets display to monochrome, the rest is defaults
-    0x30, 1, // IL0398_PLL
-        0x3A, // 100 Hz
-    0x61, 4, // IL0398_RESOLUTION
-        (HEIGHT >> 8) & 0xFF,
-        HEIGHT & 0xFF,
-        (WIDTH >> 8) & 0xFF,
-        WIDTH & 0xFF,
-    0x82, 1, // IL0398_VCM_DC_SETTING
-        0x12, // VCOM_DC = -1.5v
-    0x50, 1, // IL0398_VCOM
-        0xD7, // leave border floating
-    0x04, 0 | DELAY, 100
+    0x01, 0x04, 0x03, 0x00, 0x2b, 0x2b, // power setting
+    0x06, 0x03, 0x17, 0x17, 0x17, // booster soft start
+    0x04, 0x80, 0xc8, // power on and wait 200 ms
+    0x00, 0x01, 0x0f, // panel setting
+    0x61, 0x04, (HEIGHT >> 8) & 0xFF, HEIGHT & 0xFF, (WIDTH >> 8) & 0xFF, WIDTH & 0xFF // Resolution
 };
 
 uint8_t stop_sequence[] = {
-    0x50, 1, // IL0398_VCOM
-        0xf7, // border floating
-    0x02, 0 | DELAY, 240 // IL0398_POWER_OFF
+    0x50, 0x01, 0xf7, // CDI setting
+    0x02, 0x80, 0xf0  // Power off
 };
 
 void board_init(void) {
@@ -106,7 +87,7 @@ void board_init(void) {
         NO_COMMAND, // set_row_window_command
         NO_COMMAND, // set_current_column_command
         NO_COMMAND, // set_current_row_command
-        0x10, // write_black_ram_command
+        0x13, // write_black_ram_command
         false, // black_bits_inverted
         NO_COMMAND, // write_color_ram_command (can add this for grayscale eventually)
         false, // color_bits_inverted
@@ -115,7 +96,7 @@ void board_init(void) {
         40, // refresh_time
         &pin_PA01, // busy_pin
         false, // busy_state
-        10, // seconds_per_frame
+        5, // seconds_per_frame
         false); // chip_select (don't always toggle chip select)
 }
 
