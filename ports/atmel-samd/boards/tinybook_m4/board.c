@@ -27,6 +27,7 @@
 #include "boards/board.h"
 #include "mpconfigboard.h"
 #include "hal/include/hal_gpio.h"
+#include "shared-bindings/board/__init__.h"
 #include "shared-bindings/busio/SPI.h"
 #include "shared-bindings/displayio/FourWire.h"
 #include "shared-bindings/time/__init__.h"
@@ -56,10 +57,7 @@ uint8_t stop_sequence[] = {
 };
 
 void board_init(void) {
-    busio_spi_obj_t* spi = &displays[0].fourwire_bus.inline_bus;
-    common_hal_busio_spi_construct(spi, &pin_PB03, &pin_PB23, &pin_PB22);
-    common_hal_busio_spi_never_reset(spi);
-
+    busio_spi_obj_t *spi = common_hal_board_create_spi();
     displayio_fourwire_obj_t* bus = &displays[0].fourwire_bus;
     bus->base.type = &displayio_fourwire_type;
     common_hal_displayio_fourwire_construct(bus,
