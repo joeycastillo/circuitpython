@@ -88,7 +88,7 @@ INC += -I../../supervisor/shared/usb
 ifeq ($(DEBUG), 1)
   CFLAGS += -ggdb3 -Og
 else
-  CFLAGS += -Os -DNDEBUG
+  CFLAGS += -Os -DNDEBUG -ggdb3
   CFLAGS += -flto -flto-partition=none
 endif
 
@@ -102,7 +102,6 @@ CFLAGS += -Wno-undef
 CFLAGS += -Wno-cast-align
 
 NRF_DEFINES += -DCONFIG_GPIO_AS_PINRESET
-NRF_DEFINES += -D_FS_DISK_READ_ALIGNED=1
 CFLAGS += $(NRF_DEFINES)
 
 CFLAGS += \
@@ -149,8 +148,6 @@ endif
 SRC_C += \
 	background.c \
 	fatfs_port.c \
-	mphalport.c \
-	tick.c \
 	boards/$(BOARD)/board.c \
 	boards/$(BOARD)/pins.c \
 	device/$(MCU_VARIANT)/startup_$(MCU_SUB_VARIANT).c \
@@ -181,6 +178,37 @@ SRC_C += \
 ifeq ($(MCU_SUB_VARIANT),nrf52840)
 SRC_C += \
 	lib/tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c
+endif
+
+ifeq ($(MCU_SUB_VARIANT),nrf52833)
+SRC_C += \
+	lib/tinyusb/src/portable/nordic/nrf5x/dcd_nrf5x.c
+endif
+
+ifeq ($(CIRCUITPY_NETWORK),1)
+CFLAGS += -DMICROPY_PY_NETWORK=1
+
+SRC_MOD += lib/netutils/netutils.c
+
+ifneq ($(MICROPY_PY_WIZNET5K),0)
+WIZNET5K_DIR=drivers/wiznet5k
+INC += -I$(TOP)/$(WIZNET5K_DIR)
+CFLAGS_MOD += -DMICROPY_PY_WIZNET5K=$(MICROPY_PY_WIZNET5K) -D_WIZCHIP_=$(MICROPY_PY_WIZNET5K)
+SRC_MOD += $(addprefix $(WIZNET5K_DIR)/,\
+        ethernet/w$(MICROPY_PY_WIZNET5K)/w$(MICROPY_PY_WIZNET5K).c \
+        ethernet/wizchip_conf.c \
+        ethernet/socket.c \
+        internet/dns/dns.c \
+        internet/dhcp/dhcp.c \
+        )
+
+endif # MICROPY_PY_WIZNET5K
+endif # CIRCUITPY_NETWORK
+
+ifeq ($(CIRCUITPY_NETWORK),1)
+ifneq ($(MICROPY_PY_WIZNET5K),0)
+SRC_SHARED_MODULE += wiznet/__init__.c wiznet/wiznet5k.c
+endif
 endif
 
 SRC_COMMON_HAL_EXPANDED = $(addprefix shared-bindings/, $(SRC_COMMON_HAL)) \

@@ -34,9 +34,30 @@
 #include "nrf_sdm.h"  // for SD_FLASH_SIZE
 #include "peripherals/nrf/nvm.h" // for FLASH_PAGE_SIZE
 
+// Max RAM used by SoftDevice. Can be changed when SoftDevice parameters are changed.
+// See common.template.ld.
+#ifndef SOFTDEVICE_RAM_SIZE
+#define SOFTDEVICE_RAM_SIZE         (64*1024)
+#endif
+
 #ifdef NRF52840
 #define MICROPY_PY_SYS_PLATFORM "nRF52840"
 #define FLASH_SIZE                  (0x100000)  // 1MiB
+#define RAM_SIZE                    (0x40000)   // 256 KiB
+// Special RAM area for SPIM3 transmit buffer, to work around hardware bug.
+// See common.template.ld.
+#define SPIM3_BUFFER_SIZE           (8192)
+#endif
+
+#ifdef NRF52833
+#define MICROPY_PY_SYS_PLATFORM "nRF52833"
+#define FLASH_SIZE                  (0x80000)  // 512 KiB
+#define RAM_SIZE                    (0x20000)  // 128 KiB
+// Special RAM area for SPIM3 transmit buffer, to work around hardware bug.
+// See common.template.ld.
+#ifndef SPIM3_BUFFER_SIZE
+#define SPIM3_BUFFER_SIZE           (8192)
+#endif
 #endif
 
 #define MICROPY_PY_COLLECTIONS_ORDEREDDICT       (1)
@@ -97,54 +118,62 @@
 #define ISR_START_ADDR  (SD_FLASH_START_ADDR + SD_FLASH_SIZE)
 #define ISR_SIZE        (0x1000)   // 4kiB
 
+// Smallest unit of flash that can be erased.
+#define FLASH_ERASE_SIZE FLASH_PAGE_SIZE
+
 #define CIRCUITPY_FIRMWARE_START_ADDR  (ISR_START_ADDR + ISR_SIZE)
 
 // Define these regions starting down from the bootloader:
 
 // Bootloader values from https://github.com/adafruit/Adafruit_nRF52_Bootloader/blob/master/src/linker/s140_v6.ld
-#define BOOTLOADER_START_ADDR          (0x000F4000)
+#define BOOTLOADER_START_ADDR          (FLASH_SIZE - BOOTLOADER_SIZE - BOOTLOADER_SETTINGS_SIZE - BOOTLOADER_MBR_SIZE)
+#define BOOTLOADER_MBR_SIZE            (0x1000)     // 4kib
+#ifndef BOOTLOADER_SIZE
 #define BOOTLOADER_SIZE                (0xA000)     // 40kiB
-#define BOOTLOADER_SETTINGS_START_ADDR (0x000FF000)
+#endif
+#define BOOTLOADER_SETTINGS_START_ADDR (FLASH_SIZE - BOOTLOADER_SETTINGS_SIZE)
 #define BOOTLOADER_SETTINGS_SIZE       (0x1000)     // 4kiB
 
 #define CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR (BOOTLOADER_START_ADDR - CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE)
 
-#if CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE > 0 && CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR != (BOOTLOADER_START_ADDR - 256*1024)
+#if CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE > 0 && CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR != (BOOTLOADER_START_ADDR - CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE)
 #warning Internal flash filesystem location has moved!
 #endif
 
 #define CIRCUITPY_INTERNAL_NVM_START_ADDR (CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR - CIRCUITPY_INTERNAL_NVM_SIZE)
 
 // 32kiB for bonding, etc.
+#ifndef CIRCUITPY_BLE_CONFIG_SIZE
 #define CIRCUITPY_BLE_CONFIG_SIZE       (32*1024)
+#endif
 #define CIRCUITPY_BLE_CONFIG_START_ADDR (CIRCUITPY_INTERNAL_NVM_START_ADDR - CIRCUITPY_BLE_CONFIG_SIZE)
 
 // The firmware space is the space left over between the fixed lower and upper regions.
-#define CIRCUITPY_FIRMWARE_SIZE (CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR - CIRCUITPY_FIRMWARE_START_ADDR)
+#define CIRCUITPY_FIRMWARE_SIZE (CIRCUITPY_BLE_CONFIG_START_ADDR - CIRCUITPY_FIRMWARE_START_ADDR)
 
-#if BOOTLOADER_START_ADDR % FLASH_PAGE_SIZE != 0
-#error BOOTLOADER_START_ADDR must be on a flash page boundary.
-#endif
-
-#if CIRCUITPY_INTERNAL_NVM_START_ADDR % FLASH_PAGE_SIZE != 0
-#error CIRCUITPY_INTERNAL_NVM_START_ADDR must be on a flash page boundary.
-#endif
-#if CIRCUITPY_INTERNAL_NVM_SIZE % FLASH_PAGE_SIZE != 0
-#error CIRCUITPY_INTERNAL_NVM_SIZE must be a multiple of FLASH_PAGE_SIZE.
+#if BOOTLOADER_START_ADDR % FLASH_ERASE_SIZE != 0
+#error BOOTLOADER_START_ADDR must be on a flash erase boundary.
 #endif
 
-#if CIRCUITPY_BLE_CONFIG_START_ADDR % FLASH_PAGE_SIZE != 0
-#error CIRCUITPY_BLE_CONFIG_SIZE must be on a flash page boundary.
+#if CIRCUITPY_INTERNAL_NVM_START_ADDR % FLASH_ERASE_SIZE != 0
+#error CIRCUITPY_INTERNAL_NVM_START_ADDR must be on a flash erase boundary.
 #endif
-#if CIRCUITPY_BLE_CONFIG_SIZE % FLASH_PAGE_SIZE != 0
-#error CIRCUITPY_BLE_CONFIG_SIZE must be a multiple of FLASH_PAGE_SIZE.
+#if CIRCUITPY_INTERNAL_NVM_SIZE % FLASH_ERASE_SIZE != 0
+#error CIRCUITPY_INTERNAL_NVM_SIZE must be a multiple of FLASH_ERASE_SIZE.
 #endif
 
-#if CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR % FLASH_PAGE_SIZE != 0
-#error CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE must be on a flash page boundary.
+#if CIRCUITPY_BLE_CONFIG_START_ADDR % FLASH_ERASE_SIZE != 0
+#error CIRCUITPY_BLE_CONFIG_SIZE must be on a flash erase boundary.
 #endif
-#if CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE % FLASH_PAGE_SIZE != 0
-#error CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE must be a multiple of FLASH_PAGE_SIZE.
+#if CIRCUITPY_BLE_CONFIG_SIZE % FLASH_ERASE_SIZE != 0
+#error CIRCUITPY_BLE_CONFIG_SIZE must be a multiple of FLASH_ERASE_SIZE.
+#endif
+
+#if CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_START_ADDR % FLASH_ERASE_SIZE != 0
+#error CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE must be on a flash erase boundary.
+#endif
+#if CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE % FLASH_ERASE_SIZE != 0
+#error CIRCUITPY_INTERNAL_FLASH_FILESYSTEM_SIZE must be a multiple of FLASH_ERASE_SIZE.
 #endif
 
 #if CIRCUITPY_FIRMWARE_SIZE < 0
@@ -154,6 +183,7 @@
 
 #define MICROPY_PORT_ROOT_POINTERS \
     CIRCUITPY_COMMON_ROOT_POINTERS \
+    uint16_t* pixels_pattern_heap; \
     ble_drv_evt_handler_entry_t* ble_drv_evt_handler_entries; \
 
 

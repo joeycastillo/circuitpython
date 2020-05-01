@@ -27,18 +27,17 @@
 #include "background.h"
 
 //#include "audio_dma.h"
-#include "tick.h"
 #include "supervisor/filesystem.h"
 #include "supervisor/shared/tick.h"
 #include "supervisor/usb.h"
 
 #include "py/runtime.h"
 #include "shared-module/network/__init__.h"
+#include "supervisor/linker.h"
 #include "supervisor/shared/stack.h"
 
-// TODO
 #ifdef CIRCUITPY_DISPLAYIO
-//#include "shared-module/displayio/__init__.h"
+#include "shared-module/displayio/__init__.h"
 #endif
 
 volatile uint64_t last_finished_tick = 0;
@@ -51,7 +50,7 @@ void background_tasks_reset(void) {
     running_background_tasks = false;
 }
 
-void run_background_tasks(void) {
+void PLACE_IN_ITCM(run_background_tasks)(void) {
     // Don't call ourselves recursively.
     if (running_background_tasks) {
         return;

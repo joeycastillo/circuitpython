@@ -142,6 +142,9 @@ endif
 ifeq ($(CIRCUITPY_DISPLAYIO),1)
 SRC_PATTERNS += displayio/% terminalio/% fontio/%
 endif
+ifeq ($(CIRCUITPY_FRAMEBUFFERIO),1)
+SRC_PATTERNS += framebufferio/%
+endif
 ifeq ($(CIRCUITPY_FREQUENCYIO),1)
 SRC_PATTERNS += frequencyio/%
 endif
@@ -156,6 +159,9 @@ SRC_PATTERNS += i2cslave/%
 endif
 ifeq ($(CIRCUITPY_MATH),1)
 SRC_PATTERNS += math/%
+endif
+ifeq ($(CIRCUITPY__EVE),1)
+SRC_PATTERNS += _eve/%
 endif
 ifeq ($(CIRCUITPY_MICROCONTROLLER),1)
 SRC_PATTERNS += microcontroller/%
@@ -174,6 +180,9 @@ SRC_PATTERNS += os/%
 endif
 ifeq ($(CIRCUITPY_PIXELBUF),1)
 SRC_PATTERNS += _pixelbuf/%
+endif
+ifeq ($(CIRCUITPY_RGBMATRIX),1)
+SRC_PATTERNS += rgbmatrix/%
 endif
 ifeq ($(CIRCUITPY_PULSEIO),1)
 SRC_PATTERNS += pulseio/%
@@ -268,6 +277,8 @@ SRC_COMMON_HAL_ALL = \
 	nvm/ByteArray.c \
 	nvm/__init__.c \
 	os/__init__.c \
+	rgbmatrix/RGBMatrix.c \
+	rgbmatrix/__init__.c \
 	pulseio/PWMOut.c \
 	pulseio/PulseIn.c \
 	pulseio/PulseOut.c \
@@ -279,8 +290,7 @@ SRC_COMMON_HAL_ALL = \
 	rtc/RTC.c \
 	rtc/__init__.c \
 	supervisor/Runtime.c \
-	supervisor/__init__.c \
-	time/__init__.c
+	supervisor/__init__.c
 
 SRC_COMMON_HAL = $(filter $(SRC_PATTERNS), $(SRC_COMMON_HAL_ALL))
 
@@ -298,6 +308,7 @@ $(filter $(SRC_PATTERNS), \
 	fontio/Glyph.c \
 	microcontroller/RunMode.c \
 	math/__init__.c \
+	_eve/__init__.c \
 )
 
 SRC_BINDINGS_ENUMS += \
@@ -344,6 +355,8 @@ SRC_SHARED_MODULE_ALL = \
 	displayio/__init__.c \
 	fontio/BuiltinFont.c \
 	fontio/__init__.c \
+	framebufferio/FramebufferDisplay.c \
+	framebufferio/__init__.c \
 	gamepad/GamePad.c \
 	gamepad/__init__.c \
 	gamepadshift/GamePadShift.c \
@@ -352,14 +365,18 @@ SRC_SHARED_MODULE_ALL = \
 	random/__init__.c \
 	socket/__init__.c \
 	network/__init__.c \
+	rgbmatrix/RGBMatrix.c \
+	rgbmatrix/__init__.c \
 	storage/__init__.c \
 	struct/__init__.c \
+	time/__init__.c \
 	terminalio/Terminal.c \
 	terminalio/__init__.c \
 	uheap/__init__.c \
 	ustack/__init__.c \
 	_pew/__init__.c \
-	_pew/PewPew.c
+	_pew/PewPew.c \
+	_eve/__init__.c
 
 # All possible sources are listed here, and are filtered by SRC_PATTERNS.
 SRC_SHARED_MODULE = $(filter $(SRC_PATTERNS), $(SRC_SHARED_MODULE_ALL))
@@ -396,6 +413,12 @@ SRC_MOD += $(addprefix lib/mp3/src/, \
 )
 $(BUILD)/lib/mp3/src/buffers.o: CFLAGS += -include "py/misc.h" -D'MPDEC_ALLOCATOR(x)=m_malloc(x,0)' -D'MPDEC_FREE(x)=m_free(x)'
 endif
+ifeq ($(CIRCUITPY_RGBMATRIX),1)
+SRC_MOD += $(addprefix lib/protomatter/, \
+	core.c \
+)
+$(BUILD)/lib/protomatter/core.o: CFLAGS += -include "shared-module/rgbmatrix/allocator.h" -DCIRCUITPY -Wno-missing-braces
+endif
 
 # All possible sources are listed here, and are filtered by SRC_PATTERNS.
 SRC_SHARED_MODULE_INTERNAL = \
@@ -426,6 +449,19 @@ $(addprefix lib/,\
 	libm/atanf.c \
 	libm/atan2f.c \
 	)
+ifeq ($(CIRCUITPY_ULAB),1)
+SRC_LIBM += \
+$(addprefix lib/,\
+	libm/acoshf.c \
+	libm/asinhf.c \
+	libm/atanhf.c \
+	libm/erf_lgamma.c \
+	libm/log1pf.c \
+	libm/sf_erf.c \
+	libm/wf_lgamma.c \
+	libm/wf_tgamma.c \
+	)
+endif
 endif
 
 ifdef LD_TEMPLATE_FILE

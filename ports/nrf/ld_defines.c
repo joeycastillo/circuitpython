@@ -9,6 +9,9 @@
 // The next line is a marker to start looking for definitions. Lines above the next line are ignored.
 // START_LD_DEFINES
 
+/*FLASH_SIZE=*/                                     FLASH_SIZE;
+/*RAM_SIZE=*/                                       RAM_SIZE;
+
 /*MBR_START_ADDR=*/                                 MBR_START_ADDR;
 /*MBR_SIZE=*/                                       MBR_SIZE;
 
@@ -37,3 +40,6 @@
 
 /*BOOTLOADER_SETTINGS_START_ADDR=*/                 BOOTLOADER_SETTINGS_START_ADDR;
 /*BOOTLOADER_SETTINGS_SIZE=*/                       BOOTLOADER_SETTINGS_SIZE;
+
+/*SOFTDEVICE_RAM_SIZE=*/                            SOFTDEVICE_RAM_SIZE;
+/*SPIM3_BUFFER_SIZE=*/                              SPIM3_BUFFER_SIZE;
