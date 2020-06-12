@@ -41,6 +41,7 @@
 #include "common-hal/pulseio/PulseOut.h"
 #include "common-hal/pulseio/PWMOut.h"
 #include "common-hal/rtc/RTC.h"
+#include "common-hal/busio/SPI.h"
 
 #include "reset.h"
 
@@ -256,8 +257,8 @@ safe_mode_t port_init(void) {
     // enabled. It won't occur very often so it'll be low overhead.
     NVIC_EnableIRQ(SNVS_HP_WRAPPER_IRQn);
 
-    // Reset everything into a known state before board_init.
-    reset_port();
+    // Note that `reset_port` CANNOT GO HERE, unlike other ports, because `board_init` hasn't been
+    // run yet, which uses `never_reset` to protect critical pins from being reset by  `reset_port`.
 
     if (board_requests_safe_mode()) {
         return USER_SAFE_MODE;
@@ -267,7 +268,7 @@ safe_mode_t port_init(void) {
 }
 
 void reset_port(void) {
-    //reset_sercoms();
+    spi_reset();
 
 #if CIRCUITPY_AUDIOIO
     audio_dma_reset();
@@ -315,6 +316,10 @@ void reset_to_bootloader(void) {
 
 void reset_cpu(void) {
     reset();
+}
+
+supervisor_allocation* port_fixed_stack(void) {
+    return NULL;
 }
 
 extern uint32_t _ld_heap_start, _ld_heap_end, _ld_stack_top, _ld_stack_bottom;

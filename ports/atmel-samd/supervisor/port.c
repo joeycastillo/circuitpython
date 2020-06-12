@@ -69,6 +69,7 @@
 #include "samd/events.h"
 #include "samd/external_interrupts.h"
 #include "samd/dma.h"
+#include "shared-bindings/microcontroller/__init__.h"
 #include "shared-bindings/rtc/__init__.h"
 #include "reset.h"
 
@@ -174,6 +175,10 @@ static void rtc_init(void) {
     #endif
     NVIC_ClearPendingIRQ(RTC_IRQn);
     NVIC_EnableIRQ(RTC_IRQn);
+#if CIRCUITPY_RTC
+    rtc_reset();
+#endif
+
 }
 
 safe_mode_t port_init(void) {
@@ -357,6 +362,10 @@ void reset_cpu(void) {
     reset();
 }
 
+supervisor_allocation* port_fixed_stack(void) {
+    return NULL;
+}
+
 uint32_t *port_stack_get_limit(void) {
     return &_ebss;
 }
@@ -488,7 +497,12 @@ void port_sleep_until_interrupt(void) {
         (void) __get_FPSCR();
     }
     #endif
-    __WFI();
+    common_hal_mcu_disable_interrupts();
+    if (!tud_task_event_ready()) {
+        __DSB();
+        __WFI();
+    }
+    common_hal_mcu_enable_interrupts();
 }
 
 /**

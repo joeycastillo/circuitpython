@@ -49,7 +49,7 @@
 #include STM32_HAL_H
 
 //only enable the Reset Handler overwrite for the H7 for now
-#if defined(STM32H7)
+#if (CPY_STM32H7)
 
 // Device memories must be accessed in order.
 #define DEVICE 2
@@ -147,60 +147,74 @@ __attribute__((used, naked)) void Reset_Handler(void) {
     __enable_irq();
     main();
 }
-
 #endif //end H7 specific code
 
+// Low power clock variables
+static volatile uint32_t systick_ms;
 static RTC_HandleTypeDef _hrtc;
 
 #if BOARD_HAS_LOW_SPEED_CRYSTAL
-#define RTC_CLOCK_FREQUENCY LSE_VALUE
+static uint32_t rtc_clock_frequency = LSE_VALUE;
 #else
-#define RTC_CLOCK_FREQUENCY LSI_VALUE
+static uint32_t rtc_clock_frequency = LSI_VALUE;
 #endif
 
 safe_mode_t port_init(void) {
-    HAL_Init();
+    HAL_Init(); // Turns on SysTick
     __HAL_RCC_SYSCFG_CLK_ENABLE();
 
-    #if defined(STM32F4)
+    #if (CPY_STM32F4)
         __HAL_RCC_PWR_CLK_ENABLE();
     #endif
 
     stm32_peripherals_clocks_init();
     stm32_peripherals_gpio_init();
 
-    HAL_PWR_EnableBkUpAccess();
-    #if BOARD_HAS_LOW_SPEED_CRYSTAL
-    __HAL_RCC_LSE_CONFIG(RCC_LSE_ON);
-    while(__HAL_RCC_GET_FLAG(RCC_FLAG_LSERDY) == RESET) {}
-    #else
-    __HAL_RCC_LSI_ENABLE();
-    #endif
-    #if BOARD_HAS_LOW_SPEED_CRYSTAL
-    __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSE);
-    #else
-    __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSI);
-    #endif
+    // RTC oscillator selection is handled in peripherals/<family>/<line>/clocks.c
     __HAL_RCC_RTC_ENABLE();
     _hrtc.Instance = RTC;
     _hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-    // Divide async as little as possible so that we have RTC_CLOCK_FREQUENCY count in subseconds.
+    // Divide async as little as possible so that we have rtc_clock_frequency count in subseconds.
     // This ensures our timing > 1 second is correct.
     _hrtc.Init.AsynchPrediv = 0x0;
-    _hrtc.Init.SynchPrediv = RTC_CLOCK_FREQUENCY - 1;
+    _hrtc.Init.SynchPrediv = rtc_clock_frequency - 1;
     _hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
 
     HAL_RTC_Init(&_hrtc);
-
     HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
+
+    // Turn off SysTick
+    SysTick->CTRL = 0;
 
     return NO_SAFE_MODE;
 }
 
+void HAL_Delay(uint32_t delay_ms) {
+    if (SysTick->CTRL != 0) {
+        // SysTick is on, so use it
+        uint32_t tickstart = systick_ms;
+        while (systick_ms - tickstart < delay_ms) {
+        }
+    } else {
+        mp_hal_delay_ms(delay_ms);
+    }
+}
+
+uint32_t HAL_GetTick() {
+    if (SysTick->CTRL != 0) {
+        return systick_ms;
+    } else {
+        uint8_t subticks;
+        uint32_t result = (uint32_t)port_get_raw_ticks(&subticks);
+        return result;
+    }
+}
+
+
 void SysTick_Handler(void) {
+    systick_ms += 1;
     // Read the CTRL register to clear the SysTick interrupt.
     SysTick->CTRL;
-    HAL_IncTick();
 }
 
 void reset_port(void) {
@@ -233,6 +247,10 @@ uint32_t *port_heap_get_bottom(void) {
 
 uint32_t *port_heap_get_top(void) {
     return &_ld_heap_end;
+}
+
+supervisor_allocation* port_fixed_stack(void) {
+    return NULL;
 }
 
 uint32_t *port_stack_get_limit(void) {
@@ -293,7 +311,7 @@ volatile uint32_t cached_date = 0;
 volatile uint32_t seconds_to_minute = 0;
 volatile uint32_t cached_hours_minutes = 0;
 uint64_t port_get_raw_ticks(uint8_t* subticks) {
-    uint32_t subseconds = RTC_CLOCK_FREQUENCY - (uint32_t)(RTC->SSR);
+    uint32_t subseconds = rtc_clock_frequency - (uint32_t)(RTC->SSR);
     uint32_t time = (uint32_t)(RTC->TR & RTC_TR_RESERVED_MASK);
     uint32_t date = (uint32_t)(RTC->DR & RTC_DR_RESERVED_MASK);
     if (date != cached_date) {
@@ -341,7 +359,7 @@ void RTC_Alarm_IRQHandler(void) {
 
 // Enable 1/1024 second tick.
 void port_enable_tick(void) {
-    HAL_RTCEx_SetWakeUpTimer_IT(&_hrtc, RTC_CLOCK_FREQUENCY / 1024 / 2, RTC_WAKEUPCLOCK_RTCCLK_DIV2);
+    HAL_RTCEx_SetWakeUpTimer_IT(&_hrtc, rtc_clock_frequency / 1024 / 2, RTC_WAKEUPCLOCK_RTCCLK_DIV2);
     HAL_NVIC_SetPriority(RTC_WKUP_IRQn, 1, 0U);
     HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
 }
@@ -372,7 +390,7 @@ void port_interrupt_after_ticks(uint32_t ticks) {
         alarm.AlarmMask = RTC_ALARMMASK_ALL;
     }
 
-    alarm.AlarmTime.SubSeconds = RTC_CLOCK_FREQUENCY -
+    alarm.AlarmTime.SubSeconds = rtc_clock_frequency -
                                  ((raw_ticks % 1024) * 32);
     alarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
     alarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_SET;
@@ -403,4 +421,3 @@ void _init(void)
 {
 
 }
-
