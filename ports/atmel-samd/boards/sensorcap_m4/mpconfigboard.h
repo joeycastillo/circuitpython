@@ -14,8 +14,8 @@
 #define MICROPY_PORT_C (0)
 #define MICROPY_PORT_D (0)
 
-#define DEFAULT_I2C_BUS_SCL (&pin_PA13)
 #define DEFAULT_I2C_BUS_SDA (&pin_PA12)
+#define DEFAULT_I2C_BUS_SCL (&pin_PA13)
 
 #define DEFAULT_SPI_BUS_SCK (&pin_PA17)
 #define DEFAULT_SPI_BUS_MOSI (&pin_PA19)
