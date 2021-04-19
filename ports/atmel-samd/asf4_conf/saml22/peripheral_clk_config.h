@@ -236,8 +236,6 @@
 #define CONF_GCLK_TC0_FREQUENCY 16000000
 #endif
 
-#include <hpl_osc32kctrl_config.h>
-
 // <y> SLCD Clock Source
 // <id> slcd_clk_selection
 // <SLCD_CLOCK_SOURCE"> SLCD source
