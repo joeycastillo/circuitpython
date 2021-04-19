@@ -49,12 +49,16 @@
 #include "hri/hri_rstc_e51.h"
 #elif defined(SAMD51)
 #include "hri/hri_rstc_d51.h"
+#elif defined(SAML22)
+#include "hri/hri_rstc_l22.h"
 #else
 #error Unknown chip family
 #endif
 
 #include "common-hal/analogio/AnalogIn.h"
+#if !defined(SAML22)
 #include "common-hal/analogio/AnalogOut.h"
+#endif
 #include "common-hal/audiobusio/PDMIn.h"
 #include "common-hal/audiobusio/I2SOut.h"
 #include "common-hal/audioio/AudioOut.h"
@@ -416,6 +420,9 @@ uint32_t *port_heap_get_top(void) {
 uint32_t* safe_word = (uint32_t*) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 0x2000);
 #endif
 #ifdef SAM_D5X_E5X
+uint32_t* safe_word = (uint32_t*) (HSRAM_ADDR + HSRAM_SIZE - 0x2000);
+#endif
+#ifdef SAML22
 uint32_t* safe_word = (uint32_t*) (HSRAM_ADDR + HSRAM_SIZE - 0x2000);
 #endif
 

@@ -107,3 +107,15 @@ CIRCUITPY_FRAMEBUFFERIO ?= $(CIRCUITPY_FULL_BUILD)
 
 endif # same51
 ######################################################################
+
+######################################################################
+# Put saml22-only choices here.
+
+ifeq ($(CHIP_FAMILY),saml22)
+
+CIRCUITPY_ANALOGIO = 0 # no DAC on SAML21
+CIRCUITPY_BUSIO = 0 # TODO, some issue with UART
+CIRCUITPY_RTC = 0 # TODO, issue with clock source defines
+
+endif # saml22
+######################################################################
