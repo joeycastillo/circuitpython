@@ -1,3 +1,19 @@
+// For CircuitPython, use SERCOM settings as prototypes to set
+// the default settings. This file defines these SERCOMs
+//
+// SERCOM0: SPI with hal_spi_m_sync.c driver: spi master synchronous
+// SERCOM1: I2C with hal_i2c_m_sync.c driver: i2c master synchronous
+// SERCOM2: USART with hal_usart_async.c driver: usart asynchronous
+// SERCOM3: SPI with hal_spi_m_dma.c: spi master DMA
+
+#define PROTOTYPE_SERCOM_SPI_M_SYNC SERCOM0
+#define PROTOTYPE_SERCOM_SPI_M_SYNC_CLOCK_FREQUENCY CONF_GCLK_SERCOM0_CORE_FREQUENCY
+
+#define PROTOTYPE_SERCOM_I2CM_SYNC SERCOM1
+
+#define PROTOTYPE_SERCOM_USART_ASYNC SERCOM2
+#define PROTOTYPE_SERCOM_USART_ASYNC_CLOCK_FREQUENCY CONF_GCLK_SERCOM2_CORE_FREQUENCY
+
 /* Auto-generated config file hpl_sercom_config.h */
 #ifndef HPL_SERCOM_CONFIG_H
 #define HPL_SERCOM_CONFIG_H
