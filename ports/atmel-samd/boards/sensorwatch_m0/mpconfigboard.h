@@ -6,6 +6,7 @@
 
 #define MICROPY_PORT_A        (0)
 #define MICROPY_PORT_B        (0)
+#define MICROPY_PORT_C        (0)
 
 #define DEFAULT_I2C_BUS_SDA (&pin_PB30)
 #define DEFAULT_I2C_BUS_SCL (&pin_PB31)
