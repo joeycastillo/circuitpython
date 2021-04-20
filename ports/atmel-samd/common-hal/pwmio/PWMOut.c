@@ -59,6 +59,10 @@ uint8_t tcc_channels[3];   // Set by pwmout_reset() to {0xf0, 0xfc, 0xfc} initia
 #ifdef SAM_D5X_E5X
 uint8_t tcc_channels[5];   // Set by pwmout_reset() to {0xc0, 0xf0, 0xf8, 0xfc, 0xfc} initially.
 #endif
+#ifdef SAML22
+// joey 4/19/21: is this right?
+uint8_t tcc_channels[3];   // Set by pwmout_reset() to {0xf0, 0xfc, 0xfc} initially.
+#endif
 
 static uint8_t never_reset_tc_or_tcc[TC_INST_NUM + TCC_INST_NUM];
 
@@ -350,6 +354,9 @@ extern void common_hal_pwmio_pwmout_set_duty_cycle(pwmio_pwmout_obj_t* self, uin
         while (tc->COUNT16.SYNCBUSY.bit.CC1 != 0) {}
         tc->COUNT16.CCBUF[1].reg = adjusted_duty;
         #endif
+        #ifdef SAML22
+        tc_insts[t->index]->COUNT16.CC[t->wave_output].reg = adjusted_duty;
+        #endif
     } else {
         uint32_t adjusted_duty = ((uint64_t) tcc_periods[t->index]) * duty / 0xffff;
         uint8_t channel = tcc_channel(t);
@@ -367,6 +374,9 @@ extern void common_hal_pwmio_pwmout_set_duty_cycle(pwmio_pwmout_obj_t* self, uin
         tcc->CCB[channel].reg = adjusted_duty;
         #endif
         #ifdef SAM_D5X_E5X
+        tcc->CCBUF[channel].reg = adjusted_duty;
+        #endif
+        #ifdef SAML22
         tcc->CCBUF[channel].reg = adjusted_duty;
         #endif
         tcc->CTRLBCLR.bit.LUPD = 1;
@@ -397,6 +407,13 @@ uint16_t common_hal_pwmio_pwmout_get_duty_cycle(pwmio_pwmout_obj_t* self) {
         }
         #endif
         #ifdef SAM_D5X_E5X
+        if ((tcc->STATUS.vec.CCBUFV & (1 << channel)) != 0) {
+            cv = tcc->CCBUF[channel].reg;
+        } else {
+            cv = tcc->CC[channel].reg;
+        }
+        #endif
+        #ifdef SAML22
         if ((tcc->STATUS.vec.CCBUFV & (1 << channel)) != 0) {
             cv = tcc->CCBUF[channel].reg;
         } else {
