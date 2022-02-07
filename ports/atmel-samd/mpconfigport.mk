@@ -120,7 +120,7 @@ endif # same51
 
 ifeq ($(CHIP_FAMILY),saml22)
 
-CIRCUITPY_ANALOGIO = 0 # no DAC on SAML21
+CIRCUITPY_ANALOGIO = 0 # no DAC on SAML22
 
 endif # saml22
 ######################################################################
