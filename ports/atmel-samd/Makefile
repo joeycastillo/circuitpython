@@ -229,7 +229,7 @@ LDFLAGS += -mthumb -mcpu=cortex-m0plus -Lasf/thirdparty/CMSIS/Lib/GCC/
 BOOTLOADER_SIZE := 0x2000
 else ifeq ($(CHIP_FAMILY), saml22)
 LDFLAGS += -mthumb -mcpu=cortex-m0plus -Lasf/thirdparty/CMSIS/Lib/GCC/
-BOOTLOADER_SIZE := 0x8000
+BOOTLOADER_SIZE := 0x2000
 else ifeq ($(CHIP_FAMILY), samd51)
 LDFLAGS += -mthumb -mcpu=cortex-m4
 BOOTLOADER_SIZE := 0x4000
