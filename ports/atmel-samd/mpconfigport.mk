@@ -114,3 +114,13 @@ CIRCUITPY_RGBMATRIX ?= $(CIRCUITPY_FRAMEBUFFERIO)
 
 endif # same51
 ######################################################################
+
+######################################################################
+# Put saml22-only choices here.
+
+ifeq ($(CHIP_FAMILY),saml22)
+
+CIRCUITPY_ANALOGIO = 0 # no DAC on SAML21
+
+endif # saml22
+######################################################################

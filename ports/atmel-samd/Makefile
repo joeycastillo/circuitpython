@@ -113,6 +113,13 @@ OPTIMIZATION_FLAGS ?= -O2
 CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_SAME5X -DCFG_TUD_MIDI_RX_BUFSIZE=128 -DCFG_TUD_CDC_RX_BUFSIZE=256 -DCFG_TUD_MIDI_TX_BUFSIZE=128 -DCFG_TUD_CDC_TX_BUFSIZE=256 -DCFG_TUD_MSC_BUFSIZE=1024
 endif
 
+ifeq ($(CHIP_FAMILY), saml22)
+PERIPHERALS_CHIP_FAMILY=saml22
+OPTIMIZATION_FLAGS ?= -Os
+# TinyUSB defines
+CFLAGS += -DCFG_TUSB_MCU=OPT_MCU_SAML22 -DCFG_TUD_MIDI_RX_BUFSIZE=128 -DCFG_TUD_CDC_RX_BUFSIZE=128 -DCFG_TUD_MIDI_TX_BUFSIZE=128 -DCFG_TUD_CDC_TX_BUFSIZE=128 -DCFG_TUD_MSC_BUFSIZE=512
+endif
+
 # option to override default optimization level, set in boards/$(BOARD)/mpconfigboard.mk
 CFLAGS += $(OPTIMIZATION_FLAGS)
 
@@ -196,6 +203,15 @@ CFLAGS += \
 	-mfpu=fpv4-sp-d16 \
 	-DSAM_D5X_E5X -DSAME51
 endif
+ifeq ($(CHIP_FAMILY), saml22)
+CFLAGS += \
+	-mthumb \
+	-mabi=aapcs-linux \
+	-mcpu=cortex-m0plus \
+	-msoft-float \
+	-mfloat-abi=soft \
+	-DSAML22
+endif
 
 
 
@@ -211,6 +227,9 @@ endif
 ifeq ($(CHIP_FAMILY), samd21)
 LDFLAGS += -mthumb -mcpu=cortex-m0plus -Lasf/thirdparty/CMSIS/Lib/GCC/
 BOOTLOADER_SIZE := 0x2000
+else ifeq ($(CHIP_FAMILY), saml22)
+LDFLAGS += -mthumb -mcpu=cortex-m0plus -Lasf/thirdparty/CMSIS/Lib/GCC/
+BOOTLOADER_SIZE := 0x8000
 else ifeq ($(CHIP_FAMILY), samd51)
 LDFLAGS += -mthumb -mcpu=cortex-m4
 BOOTLOADER_SIZE := 0x4000
@@ -228,7 +247,6 @@ SRC_ASF := \
 	hal/src/hal_adc_sync.c \
 	hal/src/hal_atomic.c \
 	hal/src/hal_calendar.c \
-	hal/src/hal_dac_sync.c \
 	hal/src/hal_delay.c \
 	hal/src/hal_flash.c \
 	hal/src/hal_i2c_m_sync.c \
@@ -250,11 +268,18 @@ SRC_ASF := \
 
 ifeq ($(CHIP_FAMILY), samd21)
 SRC_ASF += \
+	hal/src/hal_dac_sync.c \
+	hpl/core/hpl_core_m0plus_base.c \
+	hpl/sysctrl/hpl_sysctrl.c \
+
+else ifeq ($(CHIP_FAMILY), saml22)
+SRC_ASF += \
 	hpl/core/hpl_core_m0plus_base.c \
 	hpl/sysctrl/hpl_sysctrl.c \
 
 else ifeq ($(CHIP_FAMILY), samd51)
 SRC_ASF += \
+	hal/src/hal_dac_sync.c \
 	hal/src/hal_rand_sync.c \
 	hpl/core/hpl_core_m4.c \
 	hpl/mclk/hpl_mclk.c \
@@ -264,6 +289,7 @@ SRC_ASF += \
 
 else ifeq ($(CHIP_FAMILY), same54)
 SRC_ASF += \
+	hal/src/hal_dac_sync.c \
 	hal/src/hal_rand_sync.c \
 	hpl/core/hpl_core_m4.c \
 	hpl/mclk/hpl_mclk.c \
@@ -273,6 +299,7 @@ SRC_ASF += \
 
 else ifeq ($(CHIP_FAMILY), same51)
 SRC_ASF += \
+	hal/src/hal_dac_sync.c \
 	hal/src/hal_rand_sync.c \
 	hpl/core/hpl_core_m4.c \
 	hpl/mclk/hpl_mclk.c \

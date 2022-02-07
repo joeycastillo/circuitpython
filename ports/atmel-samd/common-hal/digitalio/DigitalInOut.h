@@ -37,4 +37,40 @@ typedef struct {
     bool open_drain;
 } digitalio_digitalinout_obj_t;
 
+#ifdef SAML22
+// these functions are missing from hri_port_l22.h; putting them here until i find a better place.
+// joey 4/19/21
+#include "hri_port_l22.h"
+
+#define PORT_DIR_DIR_Pos            0            /**< \brief (PORT_DIR) Port Data Direction */
+#define PORT_DIR_DIR_Msk            (_U_(0xFFFFFFFF) << PORT_DIR_DIR_Pos)
+#define PORT_DIR_DIR(value)         (PORT_DIR_DIR_Msk & ((value) << PORT_DIR_DIR_Pos))
+#define PORT_DIR_MASK               _U_(0xFFFFFFFF) /**< \brief (PORT_DIR) MASK Register */
+
+#define PORT_OUT_OUT_Pos            0            /**< \brief (PORT_OUT) PORT Data Output Value */
+#define PORT_OUT_OUT_Msk            (_U_(0xFFFFFFFF) << PORT_OUT_OUT_Pos)
+#define PORT_OUT_OUT(value)         (PORT_OUT_OUT_Msk & ((value) << PORT_OUT_OUT_Pos))
+#define PORT_OUT_MASK               _U_(0xFFFFFFFF) /**< \brief (PORT_OUT) MASK Register */
+
+static inline void hri_port_set_DIR_DIR_bf(const void *const hw, uint8_t submodule_index, hri_port_dir_reg_t mask)
+{
+	((Port *)hw)->Group[submodule_index].DIRSET.reg = PORT_DIR_DIR(mask);
+}
+
+static inline void hri_port_clear_DIR_DIR_bf(const void *const hw, uint8_t submodule_index, hri_port_dir_reg_t mask)
+{
+	((Port *)hw)->Group[submodule_index].DIRCLR.reg = PORT_DIR_DIR(mask);
+}
+
+static inline void hri_port_set_OUT_OUT_bf(const void *const hw, uint8_t submodule_index, hri_port_out_reg_t mask)
+{
+	((Port *)hw)->Group[submodule_index].OUTSET.reg = PORT_OUT_OUT(mask);
+}
+
+static inline void hri_port_clear_OUT_OUT_bf(const void *const hw, uint8_t submodule_index, hri_port_out_reg_t mask)
+{
+	((Port *)hw)->Group[submodule_index].OUTCLR.reg = PORT_OUT_OUT(mask);
+}
+#endif
+
 #endif // MICROPY_INCLUDED_ATMEL_SAMD_COMMON_HAL_DIGITALIO_DIGITALINOUT_H

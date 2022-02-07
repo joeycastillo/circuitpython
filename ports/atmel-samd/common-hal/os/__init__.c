@@ -48,6 +48,10 @@ STATIC const MP_DEFINE_STR_OBJ(os_uname_info_nodename_obj, "samd21");
 STATIC const MP_DEFINE_STR_OBJ(os_uname_info_sysname_obj, "samd51");
 STATIC const MP_DEFINE_STR_OBJ(os_uname_info_nodename_obj, "samd51");
 #endif
+#ifdef SAML22
+STATIC const MP_DEFINE_STR_OBJ(os_uname_info_sysname_obj, "saml22");
+STATIC const MP_DEFINE_STR_OBJ(os_uname_info_nodename_obj, "saml22");
+#endif
 STATIC const MP_DEFINE_STR_OBJ(os_uname_info_release_obj, MICROPY_VERSION_STRING);
 STATIC const MP_DEFINE_STR_OBJ(os_uname_info_version_obj, MICROPY_GIT_TAG " on " MICROPY_BUILD_DATE);
 STATIC const MP_DEFINE_STR_OBJ(os_uname_info_machine_obj, MICROPY_HW_BOARD_NAME " with " MICROPY_HW_MCU_NAME);

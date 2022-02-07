@@ -276,7 +276,10 @@ float common_hal_mcu_processor_get_temperature(void) {
 
     adc_sync_deinit(&adc);
     return calculate_temperature(ptat, ctat);
-    #endif // SAMD51
+#endif // SAMD51
+#ifdef SAML22
+    return convert_dec_to_frac(0); // No temperature sensor in SAM L22
+#endif
 }
 
 float common_hal_mcu_processor_get_voltage(void) {
@@ -303,7 +306,12 @@ float common_hal_mcu_processor_get_voltage(void) {
     mp_hal_delay_ms(1);
     #endif
 
+#ifdef SAML22
+    adc_sync_set_resolution(&adc, ADC_CTRLC_RESSEL_12BIT_Val);
+    #define ADC_INPUTCTRL_MUXNEG_GND_Val 0x18 // this is in the datasheet but not defined?
+#else
     adc_sync_set_resolution(&adc, ADC_CTRLB_RESSEL_12BIT_Val);
+#endif
     // Channel arg is ignored.
     adc_sync_set_inputs(&adc,
         ADC_INPUTCTRL_MUXPOS_SCALEDIOVCC_Val,                     // IOVCC/4 (nominal 3.3V/4)
@@ -340,6 +348,10 @@ void common_hal_mcu_processor_get_uid(uint8_t raw_id[]) {
     #ifdef SAM_D5X_E5X
     uint32_t *id_addresses[4] = {(uint32_t *)0x008061FC, (uint32_t *)0x00806010,
                                  (uint32_t *)0x00806014, (uint32_t *)0x00806018};
+    #endif
+    #ifdef SAML22
+    uint32_t* id_addresses[4] = {(uint32_t *) 0x0080A00C, (uint32_t *) 0x0080A040,
+                                 (uint32_t *) 0x0080A044, (uint32_t *) 0x0080A048};
     #endif
 
     for (int i = 0; i < 4; i++) {

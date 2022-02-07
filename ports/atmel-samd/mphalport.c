@@ -61,6 +61,9 @@ extern uint32_t common_hal_mcu_processor_get_frequency(void);
 #ifdef SAM_D5X_E5X
 #define DELAY_LOOP_ITERATIONS_PER_US ((30U * 120000000U) / common_hal_mcu_processor_get_frequency())
 #endif
+#ifdef SAML22
+#define DELAY_LOOP_ITERATIONS_PER_US ((10U * 48000000U) / common_hal_mcu_processor_get_frequency())
+#endif
 
 void mp_hal_delay_us(mp_uint_t delay) {
     for (uint32_t i = delay * DELAY_LOOP_ITERATIONS_PER_US; i > 0; i--) {
