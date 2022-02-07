@@ -90,8 +90,8 @@
 
 #ifdef SAML22
 
-// HMCRAMC0_SIZE is defined in the ASF4 include files for each SAML22 chip.
-#define RAM_SIZE                                    HMCRAMC0_SIZE
+// HSRAM_SIZE is defined in the ASF4 include files for each SAML22 chip.
+#define RAM_SIZE                                    HSRAM_SIZE
 #define BOOTLOADER_SIZE                             (8 * 1024)
 #define CIRCUITPY_MCU_FAMILY                        saml22
 #define MICROPY_PY_SYS_PLATFORM                     "Atmel SAML22"
