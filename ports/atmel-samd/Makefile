@@ -257,7 +257,6 @@ SRC_ASF := \
 	hal/src/hal_usart_async.c \
 	hpl/adc/hpl_adc.c \
 	hpl/core/hpl_init.c \
-	hpl/dac/hpl_dac.c \
 	hpl/gclk/hpl_gclk.c \
 	hpl/nvmctrl/hpl_nvmctrl.c \
 	hpl/pm/hpl_pm.c \
@@ -268,6 +267,7 @@ SRC_ASF := \
 
 ifeq ($(CHIP_FAMILY), samd21)
 SRC_ASF += \
+	hpl/dac/hpl_dac.c \
 	hal/src/hal_dac_sync.c \
 	hpl/core/hpl_core_m0plus_base.c \
 	hpl/sysctrl/hpl_sysctrl.c \
@@ -275,10 +275,10 @@ SRC_ASF += \
 else ifeq ($(CHIP_FAMILY), saml22)
 SRC_ASF += \
 	hpl/core/hpl_core_m0plus_base.c \
-	hpl/sysctrl/hpl_sysctrl.c \
 
 else ifeq ($(CHIP_FAMILY), samd51)
 SRC_ASF += \
+	hpl/dac/hpl_dac.c \
 	hal/src/hal_dac_sync.c \
 	hal/src/hal_rand_sync.c \
 	hpl/core/hpl_core_m4.c \
@@ -289,6 +289,7 @@ SRC_ASF += \
 
 else ifeq ($(CHIP_FAMILY), same54)
 SRC_ASF += \
+	hpl/dac/hpl_dac.c \
 	hal/src/hal_dac_sync.c \
 	hal/src/hal_rand_sync.c \
 	hpl/core/hpl_core_m4.c \
@@ -299,6 +300,7 @@ SRC_ASF += \
 
 else ifeq ($(CHIP_FAMILY), same51)
 SRC_ASF += \
+	hpl/dac/hpl_dac.c \
 	hal/src/hal_dac_sync.c \
 	hal/src/hal_rand_sync.c \
 	hpl/core/hpl_core_m4.c \
