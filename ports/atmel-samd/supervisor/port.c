@@ -252,7 +252,7 @@ static void rtc_init(void) {
     }
     // Bump up the rtc interrupt so nothing else interferes with timekeeping.
     NVIC_SetPriority(RTC_IRQn, 0);
-    #ifdef SAMD21
+    #if defined(SAMD21) || defined(SAML22)
     NVIC_SetPriority(USB_IRQn, 1);
     #endif
 
@@ -343,6 +343,10 @@ safe_mode_t port_init(void) {
     _pm_init();
     #endif
 
+    #ifdef SAML22
+    hri_nvmctrl_set_CTRLB_RWS_bf(NVMCTRL, 2);
+    #endif
+
     #if CALIBRATE_CRYSTALLESS
     uint32_t fine = DEFAULT_DFLL48M_FINE_CALIBRATION;
     // The fine calibration data is stored in an NVM page after the text and data storage but before
@@ -368,7 +372,7 @@ safe_mode_t port_init(void) {
         return BROWNOUT;
     }
     #endif
-    #ifdef SAM_D5X_E5X
+    #if defined(SAM_D5X_E5X) || defined(SAML22)
     if (RSTC->RCAUSE.bit.BODVDD == 1 || RSTC->RCAUSE.bit.BODCORE == 1) {
         return BROWNOUT;
     }

@@ -48,6 +48,9 @@
 #ifdef SAMD51
 #include "hri/hri_mclk_d51.h"
 #endif
+#ifdef SAML22
+#include "hri/hri_mclk_l22.h"
+#endif
 #include "hal/include/hal_flash.h"
 
 #include "supervisor/flash.h"
