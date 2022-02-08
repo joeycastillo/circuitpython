@@ -1,8 +1,8 @@
 // LEDs
 #define MICROPY_HW_LED_STATUS   (&pin_PA03)
 
-#define MICROPY_HW_BOARD_NAME "The Sensor Watch"
-#define MICROPY_HW_MCU_NAME "saml22g18"
+#define MICROPY_HW_BOARD_NAME "Feather with LCD"
+#define MICROPY_HW_MCU_NAME "saml22j18"
 
 #define MICROPY_PORT_A        (0)
 #define MICROPY_PORT_B        (0)
