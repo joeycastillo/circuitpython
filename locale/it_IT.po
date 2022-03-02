@@ -594,7 +594,7 @@ msgstr "Entrambi i pin devono supportare gli interrupt hardware"
 
 #: shared-bindings/displayio/Display.c
 #: shared-bindings/framebufferio/FramebufferDisplay.c
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 #: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "Brightness must be 0-1.0"
 msgstr "La luminosità deve essere tra 0-1.0"
@@ -1149,6 +1149,13 @@ msgstr ""
 msgid "Group already used"
 msgstr ""
 
+#: ports/atmel-samd/common-hal/busio/SPI.c ports/cxd56/common-hal/busio/SPI.c
+#: ports/espressif/common-hal/busio/SPI.c
+#: ports/mimxrt10xx/common-hal/busio/SPI.c ports/nrf/common-hal/busio/SPI.c
+#: ports/raspberrypi/common-hal/busio/SPI.c
+msgid "Half duplex SPI is not implemented"
+msgstr ""
+
 #: ports/mimxrt10xx/common-hal/busio/SPI.c ports/stm/common-hal/busio/I2C.c
 #: ports/stm/common-hal/busio/SPI.c ports/stm/common-hal/canio/CAN.c
 #: ports/stm/common-hal/sdioio/SDCard.c
@@ -1505,7 +1512,7 @@ msgstr ""
 msgid "Key must be 16, 24, or 32 bytes long"
 msgstr ""
 
-#: shared-module/is31fl3741/IS31FL3741.c
+#: shared-module/is31fl3741/FrameBuffer.c
 msgid "LED mappings must match display size"
 msgstr ""
 
@@ -1533,7 +1540,7 @@ msgstr "inizializzazione del pin MISO fallita."
 msgid "MOSI pin init failed."
 msgstr "inizializzazione del pin MOSI fallita."
 
-#: shared-bindings/is31fl3741/__init__.c
+#: shared-bindings/is31fl3741/IS31FL3741.c
 msgid "Mapping must be a tuple"
 msgstr ""
 
@@ -2160,7 +2167,7 @@ msgid "Sample rate too high. It must be less than %d"
 msgstr ""
 "Frequenza di campionamento troppo alta. Il valore deve essere inferiore a %d"
 
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 msgid "Scale dimensions must divide by 3"
 msgstr ""
 
@@ -2460,6 +2467,16 @@ msgstr "indentazione inaspettata"
 msgid "Unhandled ESP TLS error %d %d %x %d"
 msgstr ""
 
+#: ports/espressif/common-hal/_bleio/__init__.c
+#, c-format
+msgid "Unknown BLE error at %s:%d: %d"
+msgstr ""
+
+#: ports/espressif/common-hal/_bleio/__init__.c
+#, c-format
+msgid "Unknown BLE error: %d"
+msgstr ""
+
 #: shared-bindings/wifi/Radio.c
 #, c-format
 msgid "Unknown failure %d"
@@ -2532,12 +2549,14 @@ msgstr "Operazione non supportata"
 msgid "Update Failed"
 msgstr ""
 
+#: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
 msgid "Value length != required fixed length"
 msgstr ""
 
+#: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
@@ -2912,6 +2931,10 @@ msgstr "impossibile caricare da '%q'"
 msgid "can't load with '%q' index"
 msgstr "impossibile caricare con indice '%q'"
 
+#: py/builtinimport.c
+msgid "can't perform relative import"
+msgstr ""
+
 #: py/objgenerator.c
 msgid "can't send non-None value to a just-started generator"
 msgstr ""
@@ -2973,10 +2996,6 @@ msgstr "impossibile creare un istanza"
 #: py/runtime.c
 msgid "cannot import name %q"
 msgstr "impossibile imporate il nome %q"
-
-#: py/builtinimport.c
-msgid "cannot perform relative import"
-msgstr "impossibile effettuare l'importazione relativa"
 
 #: extmod/moductypes.c
 msgid "cannot unambiguously get sizeof scalar"
@@ -3680,6 +3699,10 @@ msgstr "errore di dominio matematico"
 msgid "matrix is not positive definite"
 msgstr ""
 
+#: ports/espressif/common-hal/wifi/Radio.c
+msgid "max_connections must be between 0 and 10"
+msgstr ""
+
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
@@ -3834,6 +3857,7 @@ msgstr "attributo inesistente"
 msgid "non-Device in %q"
 msgstr ""
 
+#: ports/espressif/common-hal/_bleio/Connection.c
 #: ports/nrf/common-hal/_bleio/Connection.c
 msgid "non-UUID found in service_uuids_whitelist"
 msgstr ""
@@ -4062,6 +4086,10 @@ msgstr ""
 msgid "pixel_shader must be displayio.Palette or displayio.ColorConverter"
 msgstr "pixel_shader deve essere displayio.Palette o displayio.ColorConverter"
 
+#: extmod/vfs_posix_file.c
+msgid "poll on file not available on win32"
+msgstr ""
+
 #: shared-module/vectorio/Polygon.c
 msgid "polygon can only be registered in one parent"
 msgstr ""
@@ -4107,6 +4135,7 @@ msgstr "pow() con 3 argomenti richiede interi"
 #: ports/espressif/boards/crumpspace_crumps2/mpconfigboard.h
 #: ports/espressif/boards/electroniccats_bastwifi/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32c3_devkitm_1_n4/mpconfigboard.h
+#: ports/espressif/boards/espressif_esp32s2_devkitc_1_n4r2/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_box/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_devkitc_1_n8/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_devkitc_1_n8r2/mpconfigboard.h
@@ -4624,7 +4653,7 @@ msgstr ""
 msgid "width must be from 2 to 8 (inclusive), not %d"
 msgstr ""
 
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 #: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "width must be greater than zero"
 msgstr ""
@@ -4698,6 +4727,9 @@ msgstr ""
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be of shape (n_section, 2)"
 msgstr ""
+
+#~ msgid "cannot perform relative import"
+#~ msgstr "impossibile effettuare l'importazione relativa"
 
 #~ msgid "Unsupported pull value."
 #~ msgstr "Valore di pull non supportato."

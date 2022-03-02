@@ -584,7 +584,7 @@ msgstr "Beide pinnen moeten hardware interrupts ondersteunen"
 
 #: shared-bindings/displayio/Display.c
 #: shared-bindings/framebufferio/FramebufferDisplay.c
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 #: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "Brightness must be 0-1.0"
 msgstr "Helderheid moet tussen de 0 en 1.0 liggen"
@@ -1139,6 +1139,13 @@ msgstr ""
 msgid "Group already used"
 msgstr "Groep al gebruikt"
 
+#: ports/atmel-samd/common-hal/busio/SPI.c ports/cxd56/common-hal/busio/SPI.c
+#: ports/espressif/common-hal/busio/SPI.c
+#: ports/mimxrt10xx/common-hal/busio/SPI.c ports/nrf/common-hal/busio/SPI.c
+#: ports/raspberrypi/common-hal/busio/SPI.c
+msgid "Half duplex SPI is not implemented"
+msgstr ""
+
 #: ports/mimxrt10xx/common-hal/busio/SPI.c ports/stm/common-hal/busio/I2C.c
 #: ports/stm/common-hal/busio/SPI.c ports/stm/common-hal/canio/CAN.c
 #: ports/stm/common-hal/sdioio/SDCard.c
@@ -1492,7 +1499,7 @@ msgstr "Ongeldig woord/bit lengte"
 msgid "Key must be 16, 24, or 32 bytes long"
 msgstr "Sleutel moet 16, 24, of 32 bytes lang zijn"
 
-#: shared-module/is31fl3741/IS31FL3741.c
+#: shared-module/is31fl3741/FrameBuffer.c
 msgid "LED mappings must match display size"
 msgstr ""
 
@@ -1520,7 +1527,7 @@ msgstr "MISO pin init mislukt."
 msgid "MOSI pin init failed."
 msgstr "MOSI pin init mislukt."
 
-#: shared-bindings/is31fl3741/__init__.c
+#: shared-bindings/is31fl3741/IS31FL3741.c
 msgid "Mapping must be a tuple"
 msgstr ""
 
@@ -2147,7 +2154,7 @@ msgstr "Sample rate moet positief zijn"
 msgid "Sample rate too high. It must be less than %d"
 msgstr "Sample rate is te hoog. Moet minder dan %d zijn"
 
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 msgid "Scale dimensions must divide by 3"
 msgstr ""
 
@@ -2446,6 +2453,16 @@ msgstr "Onverwacht mrfx uuid type"
 msgid "Unhandled ESP TLS error %d %d %x %d"
 msgstr "Niet behandelde ESP TLS fout %d %d %x %d"
 
+#: ports/espressif/common-hal/_bleio/__init__.c
+#, c-format
+msgid "Unknown BLE error at %s:%d: %d"
+msgstr ""
+
+#: ports/espressif/common-hal/_bleio/__init__.c
+#, c-format
+msgid "Unknown BLE error: %d"
+msgstr ""
+
 #: shared-bindings/wifi/Radio.c
 #, c-format
 msgid "Unknown failure %d"
@@ -2519,12 +2536,14 @@ msgstr "Niet-ondersteunde operatie"
 msgid "Update Failed"
 msgstr "Update Mislukt"
 
+#: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
 msgid "Value length != required fixed length"
 msgstr "Waarde lengte != vereist vaste lengte"
 
+#: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
@@ -2900,6 +2919,10 @@ msgstr "kan niet laden van '%q'"
 msgid "can't load with '%q' index"
 msgstr "kan niet met '%q' index laden"
 
+#: py/builtinimport.c
+msgid "can't perform relative import"
+msgstr ""
+
 #: py/objgenerator.c
 msgid "can't send non-None value to a just-started generator"
 msgstr "kan geen niet-'None' waarde naar een net gestartte generator sturen"
@@ -2961,10 +2984,6 @@ msgstr "kan geen instantie creëren"
 #: py/runtime.c
 msgid "cannot import name %q"
 msgstr "kan naam %q niet importeren"
-
-#: py/builtinimport.c
-msgid "cannot perform relative import"
-msgstr "kan geen relatieve import uitvoeren"
 
 #: extmod/moductypes.c
 msgid "cannot unambiguously get sizeof scalar"
@@ -3663,6 +3682,10 @@ msgstr "fout in het wiskundig domein (math domain error)"
 msgid "matrix is not positive definite"
 msgstr "matrix is niet positief-definiet"
 
+#: ports/espressif/common-hal/wifi/Radio.c
+msgid "max_connections must be between 0 and 10"
+msgstr ""
+
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
@@ -3817,6 +3840,7 @@ msgstr "niet zo'n attribuut"
 msgid "non-Device in %q"
 msgstr ""
 
+#: ports/espressif/common-hal/_bleio/Connection.c
 #: ports/nrf/common-hal/_bleio/Connection.c
 msgid "non-UUID found in service_uuids_whitelist"
 msgstr "niet-UUID gevonden in service_uuids_whitelist"
@@ -4039,6 +4063,10 @@ msgstr "pixel waarde vereist te veel bits"
 msgid "pixel_shader must be displayio.Palette or displayio.ColorConverter"
 msgstr "pixel_shader moet displayio.Palette of displayio.ColorConverter zijn"
 
+#: extmod/vfs_posix_file.c
+msgid "poll on file not available on win32"
+msgstr ""
+
 #: shared-module/vectorio/Polygon.c
 msgid "polygon can only be registered in one parent"
 msgstr ""
@@ -4085,6 +4113,7 @@ msgstr "pow() met 3 argumenten vereist integers"
 #: ports/espressif/boards/crumpspace_crumps2/mpconfigboard.h
 #: ports/espressif/boards/electroniccats_bastwifi/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32c3_devkitm_1_n4/mpconfigboard.h
+#: ports/espressif/boards/espressif_esp32s2_devkitc_1_n4r2/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_box/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_devkitc_1_n8/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_devkitc_1_n8r2/mpconfigboard.h
@@ -4600,7 +4629,7 @@ msgstr "watchdog time-out moet groter zijn dan 0"
 msgid "width must be from 2 to 8 (inclusive), not %d"
 msgstr ""
 
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 #: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "width must be greater than zero"
 msgstr "breedte moet groter dan nul zijn"
@@ -4672,6 +4701,9 @@ msgstr "zi moet van type float zijn"
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be of shape (n_section, 2)"
 msgstr "zi moet vorm (n_section, 2) hebben"
+
+#~ msgid "cannot perform relative import"
+#~ msgstr "kan geen relatieve import uitvoeren"
 
 #, c-format
 #~ msgid "No I2C device at address: %x"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: circuitpython-cn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-01-04 12:55-0600\n"
-"PO-Revision-Date: 2022-01-11 14:56+0000\n"
+"PO-Revision-Date: 2022-02-13 00:57+0000\n"
 "Last-Translator: hexthat <hexthat@gmail.com>\n"
 "Language-Team: Chinese Hanyu Pinyin\n"
 "Language: zh_Latn_pinyin\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11-dev\n"
 
 #: main.c
 msgid ""
@@ -596,7 +596,7 @@ msgstr "liǎnggè yǐnjiǎo dōu bìxū zhīchí yìngjiàn zhōngduàn"
 
 #: shared-bindings/displayio/Display.c
 #: shared-bindings/framebufferio/FramebufferDisplay.c
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 #: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "Brightness must be 0-1.0"
 msgstr "Liàngdù bìxū wèi 0-1.0"
@@ -1155,6 +1155,13 @@ msgstr "tōng yòng gù zhàng"
 msgid "Group already used"
 msgstr "Jítuán yǐjīng shǐyòngguò"
 
+#: ports/atmel-samd/common-hal/busio/SPI.c ports/cxd56/common-hal/busio/SPI.c
+#: ports/espressif/common-hal/busio/SPI.c
+#: ports/mimxrt10xx/common-hal/busio/SPI.c ports/nrf/common-hal/busio/SPI.c
+#: ports/raspberrypi/common-hal/busio/SPI.c
+msgid "Half duplex SPI is not implemented"
+msgstr "wèi shí xiàn bàn shuāng gōng SPI"
+
 #: ports/mimxrt10xx/common-hal/busio/SPI.c ports/stm/common-hal/busio/I2C.c
 #: ports/stm/common-hal/busio/SPI.c ports/stm/common-hal/canio/CAN.c
 #: ports/stm/common-hal/sdioio/SDCard.c
@@ -1411,7 +1418,7 @@ msgstr "Wúxiào de nèicún fǎngwèn."
 
 #: extmod/vfs_fat_file.c
 msgid "Invalid mode"
-msgstr ""
+msgstr "wú xiào mó shì"
 
 #: ports/espressif/common-hal/wifi/Radio.c
 msgid "Invalid multicast MAC address"
@@ -1513,7 +1520,7 @@ msgstr "Wúxiào de zì/wèi chángdù"
 msgid "Key must be 16, 24, or 32 bytes long"
 msgstr "mì yào bì xū wéi 16, 24 huò 32 zì jié cháng"
 
-#: shared-module/is31fl3741/IS31FL3741.c
+#: shared-module/is31fl3741/FrameBuffer.c
 msgid "LED mappings must match display size"
 msgstr "LED yìng shè bì xū yǔ xiǎn shì píng chǐ cùn pǐ pèi"
 
@@ -1541,9 +1548,9 @@ msgstr "MISO yǐn jiǎo chūshǐhuà shībài."
 msgid "MOSI pin init failed."
 msgstr "MOSI yǐn jiǎo shūrù shībài."
 
-#: shared-bindings/is31fl3741/__init__.c
+#: shared-bindings/is31fl3741/IS31FL3741.c
 msgid "Mapping must be a tuple"
-msgstr ""
+msgstr "yìng shè bì xū shì yuán zǔ"
 
 #: shared-module/displayio/Shape.c
 #, c-format
@@ -1630,7 +1637,7 @@ msgstr "Míngchēng tài zhǎng"
 
 #: ports/espressif/common-hal/_bleio/__init__.c
 msgid "Nimble out of memory"
-msgstr ""
+msgstr "líng huó de bǎi tuō jì yì"
 
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 msgid "No CCCD for this Characteristic"
@@ -1655,7 +1662,7 @@ msgstr "wèi zhǎo dào DMA qǐ bó qì"
 #: shared-module/adafruit_bus_device/i2c_device/I2CDevice.c
 #, c-format
 msgid "No I2C device at address: 0x%x"
-msgstr ""
+msgstr "dì zhǐ: 0x%x shí méi yǒu I2C qì jiàn"
 
 #: ports/espressif/common-hal/busio/SPI.c
 #: ports/mimxrt10xx/common-hal/busio/SPI.c ports/stm/common-hal/busio/SPI.c
@@ -2166,7 +2173,7 @@ msgstr "Cǎiyàng lǜ bìxū wèi zhèng shù"
 msgid "Sample rate too high. It must be less than %d"
 msgstr "Cǎiyàng lǜ tài gāo. Tā bìxū xiǎoyú %d"
 
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 msgid "Scale dimensions must divide by 3"
 msgstr "bǐ lì chǐ cùn bì xū chú yǐ 3"
 
@@ -2474,6 +2481,16 @@ msgstr "Yìwài de nrfx uuid lèixíng"
 msgid "Unhandled ESP TLS error %d %d %x %d"
 msgstr "Wèi chǔlǐ de ESP TLS cuòwù %d %d %x %d"
 
+#: ports/espressif/common-hal/_bleio/__init__.c
+#, c-format
+msgid "Unknown BLE error at %s:%d: %d"
+msgstr ""
+
+#: ports/espressif/common-hal/_bleio/__init__.c
+#, c-format
+msgid "Unknown BLE error: %d"
+msgstr ""
+
 #: shared-bindings/wifi/Radio.c
 #, c-format
 msgid "Unknown failure %d"
@@ -2496,7 +2513,7 @@ msgstr "Wèizhī de ānquán cuòwù: 0x%04x"
 #: ports/espressif/common-hal/_bleio/__init__.c
 #, c-format
 msgid "Unknown system firmware error at %s:%d: %d"
-msgstr ""
+msgstr "%s:%d: %d shí chū xiàn wèi zhī xì tǒng gù jiàn cuò wù"
 
 #: ports/nrf/common-hal/_bleio/__init__.c
 #, c-format
@@ -2506,7 +2523,7 @@ msgstr "wèi zhī xì tǒng gù jiàn cuò wù: %04x"
 #: ports/espressif/common-hal/_bleio/__init__.c
 #, c-format
 msgid "Unknown system firmware error: %d"
-msgstr ""
+msgstr "wèi zhī de xì tǒng gù jiàn cuò wù: %d"
 
 #: shared-bindings/adafruit_pixelbuf/PixelBuf.c
 #, c-format
@@ -2547,12 +2564,14 @@ msgstr "Bù zhīchí de cāozuò"
 msgid "Update Failed"
 msgstr "gēng xīn shī bài"
 
+#: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
 msgid "Value length != required fixed length"
 msgstr "Zhí chángdù != Suǒ xū de gùdìng chángdù"
 
+#: ports/espressif/common-hal/_bleio/Characteristic.c
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
@@ -2877,7 +2896,7 @@ msgstr "wúfǎ jiāng '%q' duìxiàng zhuǎnhuàn wèi %q yǐn hán"
 
 #: extmod/ulab/code/numpy/vector.c
 msgid "can't convert complex to float"
-msgstr ""
+msgstr "wú fǎ jiāng fù zá zhuǎn huàn wéi fú dòng"
 
 #: py/obj.c
 msgid "can't convert to %q"
@@ -2931,6 +2950,10 @@ msgstr "wúfǎ cóng '%q' jiāzài"
 msgid "can't load with '%q' index"
 msgstr "wúfǎ yòng '%q' ' suǒyǐn jiāzài"
 
+#: py/builtinimport.c
+msgid "can't perform relative import"
+msgstr ""
+
 #: py/objgenerator.c
 msgid "can't send non-None value to a just-started generator"
 msgstr "wúfǎ xiàng gānggāng qǐdòng de shēngchéng qì fāsòng fēi zhí"
@@ -2976,11 +2999,11 @@ msgstr ""
 
 #: extmod/ulab/code/ndarray.c
 msgid "cannot convert complex to dtype"
-msgstr ""
+msgstr "wú fǎ jiāng fù zá zhuǎn huàn wéi dtype"
 
 #: extmod/ulab/code/ndarray.c
 msgid "cannot convert complex type"
-msgstr ""
+msgstr "wú fǎ zhuǎn huàn fù zá lèi xíng"
 
 #: py/objtype.c
 msgid "cannot create '%q' instances"
@@ -2993,10 +3016,6 @@ msgstr "wúfǎ chuàngjiàn shílì"
 #: py/runtime.c
 msgid "cannot import name %q"
 msgstr "wúfǎ dǎorù míngchēng %q"
-
-#: py/builtinimport.c
-msgid "cannot perform relative import"
-msgstr "wúfǎ zhíxíng xiāngguān dǎorù"
 
 #: extmod/moductypes.c
 msgid "cannot unambiguously get sizeof scalar"
@@ -3180,7 +3199,7 @@ msgstr "èr chóng zòu bì xū shì 4"
 
 #: extmod/ulab/code/numpy/vector.c
 msgid "dtype must be float, or complex"
-msgstr ""
+msgstr "dtype bì xū shì fú diǎn xíng huò fù shù"
 
 #: py/objdeque.c
 msgid "empty"
@@ -3352,7 +3371,7 @@ msgstr "hán shù jǐn wéi ndarrays dìng yì"
 
 #: extmod/ulab/code/numpy/carray/carray.c
 msgid "function is implemented for ndarrays only"
-msgstr ""
+msgstr "hán shù jǐn zhēn duì ndarray shí xiàn"
 
 #: py/argcheck.c
 #, c-format
@@ -3485,7 +3504,7 @@ msgstr "shūrù shùjù bìxū shì kě diédài de"
 
 #: extmod/ulab/code/numpy/vector.c
 msgid "input dtype must be float or complex"
-msgstr ""
+msgstr "shū rù dtype bì xū shì fú diǎn xíng huò fù shù"
 
 #: extmod/ulab/code/numpy/linalg/linalg.c
 msgid "input matrix is asymmetric"
@@ -3498,7 +3517,7 @@ msgstr "shūrù jǔzhèn shì qíyì de"
 
 #: extmod/ulab/code/numpy/carray/carray.c
 msgid "input must be a 1D ndarray"
-msgstr ""
+msgstr "shū rù bì xū shì 1D ndarray"
 
 #: extmod/ulab/code/scipy/linalg/linalg.c extmod/ulab/code/user/user.c
 msgid "input must be a dense ndarray"
@@ -3514,7 +3533,7 @@ msgstr "shū rù bì xū shì ndarray"
 
 #: extmod/ulab/code/numpy/carray/carray.c
 msgid "input must be an ndarray, or a scalar"
-msgstr ""
+msgstr "shū rù bì xū shì ndarray huò biāo liàng"
 
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "input must be one-dimensional"
@@ -3694,6 +3713,10 @@ msgstr "shùxué yù cuòwù"
 msgid "matrix is not positive definite"
 msgstr "jǔzhèn bùshì zhèngdìng de"
 
+#: ports/espressif/common-hal/wifi/Radio.c
+msgid "max_connections must be between 0 and 10"
+msgstr ""
+
 #: ports/espressif/common-hal/_bleio/Descriptor.c
 #: ports/nrf/common-hal/_bleio/Characteristic.c
 #: ports/nrf/common-hal/_bleio/Descriptor.c
@@ -3848,6 +3871,7 @@ msgstr "méiyǒu cǐ shǔxìng"
 msgid "non-Device in %q"
 msgstr "fēi shè bèi zài %q"
 
+#: ports/espressif/common-hal/_bleio/Connection.c
 #: ports/nrf/common-hal/_bleio/Connection.c
 msgid "non-UUID found in service_uuids_whitelist"
 msgstr "Zài service_uuids bái míngdān zhōng zhǎodào fēi UUID"
@@ -3890,7 +3914,7 @@ msgstr "géshì zìfú chuàn cān shǔ bùzú"
 
 #: extmod/ulab/code/numpy/carray/carray_tools.c
 msgid "not implemented for complex dtype"
-msgstr ""
+msgstr "wèi zhēn duì fù zá de dtype shí xiàn"
 
 #: extmod/ulab/code/numpy/create.c
 msgid "number of points must be at least 2"
@@ -4070,6 +4094,10 @@ msgstr "xiàngsù zhí xūyào tài duō wèi"
 msgid "pixel_shader must be displayio.Palette or displayio.ColorConverter"
 msgstr "pixel_shader bìxū shì displayio.Palette huò displayio.ColorConverter"
 
+#: extmod/vfs_posix_file.c
+msgid "poll on file not available on win32"
+msgstr ""
+
 #: shared-module/vectorio/Polygon.c
 msgid "polygon can only be registered in one parent"
 msgstr "duōbiānxíng zhī néng zài yīgè fù jí zhōng zhùcè"
@@ -4115,6 +4143,7 @@ msgstr "pow() yǒu 3 cānshù xūyào zhěngshù"
 #: ports/espressif/boards/crumpspace_crumps2/mpconfigboard.h
 #: ports/espressif/boards/electroniccats_bastwifi/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32c3_devkitm_1_n4/mpconfigboard.h
+#: ports/espressif/boards/espressif_esp32s2_devkitc_1_n4r2/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_box/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_devkitc_1_n8/mpconfigboard.h
 #: ports/espressif/boards/espressif_esp32s3_devkitc_1_n8r2/mpconfigboard.h
@@ -4633,7 +4662,7 @@ msgstr "kān mén gǒu chāoshí bìxū dàyú 0"
 msgid "width must be from 2 to 8 (inclusive), not %d"
 msgstr "kuān dù bì xū cóng 2 dào 8 ( hán ), ér bù shì %d"
 
-#: shared-bindings/is31fl3741/IS31FL3741.c
+#: shared-bindings/is31fl3741/FrameBuffer.c
 #: shared-bindings/rgbmatrix/RGBMatrix.c
 msgid "width must be greater than zero"
 msgstr "kuāndù bìxū dàyú líng"
@@ -4660,7 +4689,7 @@ msgstr "shūrù lèixíng cuòwù"
 
 #: extmod/ulab/code/numpy/transform.c
 msgid "wrong length of condition array"
-msgstr ""
+msgstr "tiáo jiàn shù zǔ de cháng dù cuò wù"
 
 #: extmod/ulab/code/numpy/create.c py/objarray.c py/objstr.c
 msgid "wrong number of arguments"
@@ -4705,6 +4734,9 @@ msgstr "zi bìxū wèi fú diǎn xíng"
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be of shape (n_section, 2)"
 msgstr "zi bìxū jùyǒu xíngzhuàng (n_section,2)"
+
+#~ msgid "cannot perform relative import"
+#~ msgstr "wúfǎ zhíxíng xiāngguān dǎorù"
 
 #, c-format
 #~ msgid "No I2C device at address: %x"
