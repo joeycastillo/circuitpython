@@ -73,24 +73,25 @@ void init_usb_hardware(void) {
 
 #if defined(SAMD21) || defined(SAML22)
 void USB_Handler(void) {
-    usb_irq_handler();
+    usb_irq_handler(0);
 }
 #endif
 
 #ifdef SAM_D5X_E5X
+// These are different subsets of USB interrupts, *NOT* different USB peripherals.
 void USB_0_Handler(void) {
-    usb_irq_handler();
+    usb_irq_handler(0);
 }
 
 void USB_1_Handler(void) {
-    usb_irq_handler();
+    usb_irq_handler(0);
 }
 
 void USB_2_Handler(void) {
-    usb_irq_handler();
+    usb_irq_handler(0);
 }
 
 void USB_3_Handler(void) {
-    usb_irq_handler();
+    usb_irq_handler(0);
 }
 #endif

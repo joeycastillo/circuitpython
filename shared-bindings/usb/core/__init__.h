@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Scott Shawcroft for Adafruit Industries
+ * Copyright (c) 2022 Scott Shawcroft for Adafruit Industries
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,48 +24,31 @@
  * THE SOFTWARE.
  */
 
-#ifndef MICROPY_INCLUDED_SUPERVISOR_AUTORELOAD_H
-#define MICROPY_INCLUDED_SUPERVISOR_AUTORELOAD_H
+#pragma once
 
 #include <stdbool.h>
 
-#include "supervisor/memory.h"
+#include "py/obj.h"
 
-enum {
-    SUPERVISOR_NEXT_CODE_OPT_RELOAD_ON_SUCCESS = 0x1,
-    SUPERVISOR_NEXT_CODE_OPT_RELOAD_ON_ERROR = 0x2,
-    SUPERVISOR_NEXT_CODE_OPT_STICKY_ON_SUCCESS = 0x4,
-    SUPERVISOR_NEXT_CODE_OPT_STICKY_ON_ERROR = 0x8,
-    SUPERVISOR_NEXT_CODE_OPT_STICKY_ON_RELOAD = 0x10,
-    SUPERVISOR_NEXT_CODE_OPT_NEWLY_SET = 0x20,
-};
+extern const mp_obj_module_t usb_core_module;
 
-enum {
-    AUTORELOAD_LOCK_REPL = 0x1,
-    AUTORELOAD_LOCK_BLE = 0x2
-};
+void usb_core_exception_print(const mp_print_t *print, mp_obj_t o_in, mp_print_kind_t kind);
 
-typedef struct {
-    uint8_t options;
-    char filename[];
-} next_code_info_t;
+#define MP_DEFINE_USB_CORE_EXCEPTION(exc_name, base_name) \
+    const mp_obj_type_t mp_type_usb_core_##exc_name = { \
+        { &mp_type_type }, \
+        .name = MP_QSTR_##exc_name, \
+        .print = usb_core_exception_print, \
+        .make_new = mp_obj_exception_make_new, \
+        .attr = mp_obj_exception_attr, \
+        .parent = &mp_type_##base_name, \
+    };
 
-extern supervisor_allocation *next_code_allocation;
+extern const mp_obj_type_t mp_type_usb_core_USBError;
+extern const mp_obj_type_t mp_type_usb_core_USBTimeoutError;
 
-extern volatile bool reload_requested;
+NORETURN void mp_raise_usb_core_USBError(const compressed_string_t *fmt, ...);
+NORETURN void mp_raise_usb_core_USBTimeoutError(void);
 
-void autoreload_tick(void);
-
-void autoreload_start(void);
-void autoreload_stop(void);
-void autoreload_enable(void);
-void autoreload_disable(void);
-bool autoreload_is_enabled(void);
-
-// Temporarily turn it off. Used during the REPL.
-void autoreload_suspend(size_t lock_mask);
-void autoreload_resume(size_t lock_mask);
-
-void autoreload_now(void);
-
-#endif  // MICROPY_INCLUDED_SUPERVISOR_AUTORELOAD_H
+// Find is all Python object oriented so we don't need a separate common-hal API
+// for it. It uses the device common-hal instead.
